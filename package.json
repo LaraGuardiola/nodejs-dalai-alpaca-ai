@@ -1,0 +1,19 @@
+{
+  "name": "dalai-implementation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dalai": "^0.2.50",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "type": "module"
+}
