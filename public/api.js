@@ -49,3 +49,11 @@ const createParagraph = (msg) => {
 }
 
 input.addEventListener('keypress', write)
+
+// setInterval(() => {
+//     const totalMem = os.totalmem();
+//     const freeMem = os.freemem();
+//     const usedMem = totalMem - freeMem;
+//     const usedMemPercentage = Math.round(usedMem / totalMem * 100);
+//     console.log(`Memory usage: ${usedMemPercentage}% (${usedMem} / ${totalMem} bytes)`);
+// }, 1000);
