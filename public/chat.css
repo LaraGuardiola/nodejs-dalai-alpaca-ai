@@ -1,0 +1,29 @@
+* { 
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.mainspace {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+}
+
+.side-menu {
+    background-color: aqua;
+    width: 30%;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    background-color: red;
+    width: 70%;
+    justify-content: flex-end;
+}
+
+
+
+
