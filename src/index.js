@@ -10,7 +10,7 @@ app.use(express.json())
 app.listen(3000, () => console.log('listening on port 3000'))
 
 app.post('/alpaca', async (req, res) => {
-    const { prompt } = req.body
-    const result = await alpaca(prompt)
+    console.log(req.body)
+    const result = await alpaca(req.body)
     res.json({ alpaca: result })
 })
