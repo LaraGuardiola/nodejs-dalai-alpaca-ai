@@ -6,6 +6,7 @@ let threadsInput = document.querySelector('#threads')
 let n_predictInput = document.querySelector('#n_predict')
 
 const ALPACA_URL = "http://localhost:3000"
+let ramUsage = {}
 
 const write = async (event) => {
     if(event.key === 'Enter'){
@@ -50,10 +51,9 @@ const createParagraph = (msg) => {
 
 input.addEventListener('keypress', write)
 
-// setInterval(() => {
-//     const totalMem = os.totalmem();
-//     const freeMem = os.freemem();
-//     const usedMem = totalMem - freeMem;
-//     const usedMemPercentage = Math.round(usedMem / totalMem * 100);
-//     console.log(`Memory usage: ${usedMemPercentage}% (${usedMem} / ${totalMem} bytes)`);
-// }, 1000);
+setInterval(async () => {
+    const stats = await fetch(`${ALPACA_URL}/api/stats`)
+    const ram = await stats.json()
+    ramUsage = ram
+    console.log(ramUsage)
+}, 15000);
