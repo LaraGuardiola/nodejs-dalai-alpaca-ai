@@ -4,6 +4,10 @@ let modelInput = document.querySelector('#model')
 let tempInput = document.querySelector('#temp')
 let threadsInput = document.querySelector('#threads')
 let n_predictInput = document.querySelector('#n_predict')
+let totalMemory = document.querySelector('#total-memory')
+let memoryUsage = document.querySelector('#memory-usage')
+let usedMemory = document.querySelector('#used-memory')
+let freeMemory = document.querySelector('#free-memory')
 
 const ALPACA_URL = "http://localhost:3000"
 let ramUsage = {}
@@ -56,4 +60,12 @@ setInterval(async () => {
     const ram = await stats.json()
     ramUsage = ram
     console.log(ramUsage)
+    refreshMemoryUsage(ramUsage)
 }, 15000);
+
+const refreshMemoryUsage = (ramUsage) => {
+    totalMemory.textContent = ramUsage.totalMemory
+    memoryUsage.textContent = ramUsage.memoryUsage
+    usedMemory.textContent = ramUsage.usedMemory
+    freeMemory.textContent = ramUsage.freeMemory
+}
