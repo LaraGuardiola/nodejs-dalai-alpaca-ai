@@ -58,14 +58,14 @@ input.addEventListener('keypress', write)
 setInterval(async () => {
     const stats = await fetch(`${ALPACA_URL}/api/stats`)
     const ram = await stats.json()
-    ramUsage = ram
+    ramUsage = {...ram}
     console.log(ramUsage)
     refreshMemoryUsage(ramUsage)
 }, 15000);
 
 const refreshMemoryUsage = (ramUsage) => {
-    totalMemory.textContent = ramUsage.totalMemory
-    memoryUsage.textContent = ramUsage.memoryUsage
-    usedMemory.textContent = ramUsage.usedMemory
-    freeMemory.textContent = ramUsage.freeMemory
+    totalMemory.textContent = `Total memory: ${ramUsage.totalMemory}`
+    memoryUsage.textContent = `Memory usage: ${ramUsage.memoryUsage}`
+    usedMemory.textContent = `Used memory: ${ramUsage.usedMemory}`
+    freeMemory.textContent = `Free memory: ${ramUsage.freeMemory}`
 }

@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+ul {
+    list-style: none;
+}
+
 .mainspace {
     display: flex;
     flex-direction: row;
@@ -51,6 +55,11 @@ hr {
 .settings-row input,
 .settings-row select {
     flex: 1;
+}
+
+/* tbh I barely get the idea behind why this is working but hey :) */
+.ram-usage {
+    margin-top: auto;
 }
 
 .chat {
