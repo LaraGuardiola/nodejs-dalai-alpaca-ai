@@ -17,22 +17,22 @@
             <h3>Settings</h3>
             <div class="settings-row">
                 <label for="model">Model:</label>
-                <select class ="side-menu-input" id="model" name="model">
+                <select tabindex="1" class ="side-menu-input" id="model" name="model">
                     <option value="7B">7B</option>
                     <option value="13B">13B</option>
                 </select>
             </div>
             <div class="settings-row">
                 <label title ="In short, the lower the temperature the more deterministic the results in the sense that the highest probable next token is always picked. Increasing temperature could lead to more randomness encouraging more diverse or creative outputs. We are essentially increasing the weights of the other possible tokens. In terms of application, we might want to use a lower temperature value for tasks like fact-based QA to encourage more factual and concise responses. For poem generation or other creative tasks, it might be beneficial to increase the temperature value." for="temp">Temp:</label>
-                <input class ="side-menu-input" id="temp" type="number" name="temp" value="0.9">
+                <input tabindex="2" class ="side-menu-input" id="temp" type="number" name="temp" value="0.9">
             </div>
             <div class="settings-row">
                 <label for="threads">Threads:</label>
-                <input class ="side-menu-input" id="threads" type="number" name="threads" value="8">
+                <input tabindex="3" class ="side-menu-input" id="threads" type="number" name="threads" value="8">
             </div>
             <div class="settings-row">
                 <label for="n_predict">N_predict:</label>
-                <input class ="side-menu-input" id="n_predict" type="number" name="n_predict" value="128">
+                <input tabindex="4" class ="side-menu-input" id="n_predict" type="number" name="n_predict" value="128">
             </div>
             <br>
             <h3>System info</h3>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="RAM green-border">
                     <h4>RAM <i class="fa-solid fa-memory"></i></h4>
-                    <li id="memory">ejemplo</li>
+                    <li id="memory"></li>
                     <br>
                     <li class="usage-percentage" id="ram-percentage">0%</li>
                 </div>
@@ -60,6 +60,11 @@
             </div>
             <div class="lower-chat">
                 <input tabindex="0" type="text" name="input-chat" id="input-chat">
+                <div class="container">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
             </div>
         </div>
     </div>

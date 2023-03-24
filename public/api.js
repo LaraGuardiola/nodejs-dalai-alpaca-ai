@@ -9,6 +9,7 @@ let threadsCores = document.querySelector('#threads-cores')
 let memory = document.querySelector('#memory')
 let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
+let dots = document.querySelectorAll('.dot')
 
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
@@ -35,6 +36,7 @@ const getConfig = () => {
 }
 
 const callAlpaca = async (config) => {
+    dots.forEach(dot => dot.style.display = "inline-block")
     console.log(config)
     const response = await fetch(`${ALPACA_URL}/alpaca`,{
         method: "POST",
@@ -44,6 +46,7 @@ const callAlpaca = async (config) => {
         }
     })
     const { alpaca } = await response.json()
+    dots.forEach(dot => dot.style.display = "none")
     createChatbox(alpaca)
 }
 

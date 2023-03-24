@@ -70,9 +70,9 @@ li {
     background-image: url("./assets/alpaca.jpg");
     background-size: cover;
     background-position: center;
-    height: 120px;
-    width: 120px;
-    border-radius: 60px;
+    height: 150px;
+    width: 150px;
+    border-radius: 75px;
     border: 3px solid white;
 }
 
@@ -97,13 +97,6 @@ li {
     flex: 1;
 }
 
-
-/* SYSTEM INFO */
-/* tbh I barely get the idea behind why this is  working but hey :) */
-.system-usage {
-    /* margin-top: auto; */
-}
-
 #pc-model {
     font-size: 0.75rem;
     padding-bottom: 1em;
@@ -115,10 +108,6 @@ li {
     font-size: 1.75em;
 }
   
-
-
-
-
 .usages {
     display: flex;
     justify-content: space-between;
@@ -187,7 +176,43 @@ h4 {
     background-color: #444654;
 }
 
+/* typing animation */
 
+.dot {
+    display: none;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background-color: #05D962;
+  }
+
+  .container {
+    position: relative;
+    bottom: 10px;
+    right: 50px;
+  }
+  
+  .container .dot:nth-last-child(1) {
+    animation: jumpingAnimation 0.6s 0.1s ease-in infinite;
+  }
+  .container .dot:nth-last-child(2) {
+    animation: jumpingAnimation 0.6s 0.2s ease-in infinite;
+  }
+  .container .dot:nth-last-child(3) {
+    animation: jumpingAnimation 0.6s 0.3s ease-in infinite;
+  }
+  
+  @keyframes jumpingAnimation {
+    0%{
+      transform: translate3d(0,0,0);
+    }
+    50% {
+      transform: translate3d(0, 15px,0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
 
 
 
