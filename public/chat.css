@@ -9,7 +9,7 @@
     src: url("./assets/Montserrat-VariableFont_wght.ttf");
 }
 
-ul {
+ul, li {
     list-style: none;
 }
 
@@ -30,6 +30,19 @@ input {
 span {
     color: #05D962;
     font-size: 1.5em;
+}
+ 
+h3 {
+    align-self: flex-start;
+    border-bottom: 1px solid #05D962;
+    border-right: 1px solid #05D962;
+    color: #05D962;
+    padding: 0.2em 1em 0.2em 0.2em;
+    border-radius: 0 0 5px 0;
+}
+
+li {
+    line-height: 150%;
 }
 
 .mainspace {
@@ -84,9 +97,52 @@ span {
     flex: 1;
 }
 
-/* tbh I barely get the idea behind why this is working but hey :) */
+
+/* SYSTEM INFO */
+/* tbh I barely get the idea behind why this is  working but hey :) */
 .system-usage {
-    margin-top: auto;
+    /* margin-top: auto; */
+}
+
+#pc-model {
+    font-size: 0.75rem;
+    padding-bottom: 1em;
+}
+
+.usage-percentage {
+    text-align: end;
+    padding-right: 0.75em;
+    font-size: 1.75em;
+}
+  
+
+
+
+
+.usages {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.CPU,
+.RAM {
+    width: 45%;
+    height: 100%
+}
+
+.green-border {
+    border-bottom: 1px solid #05D962;
+    border-right: 1px solid #05D962;
+    border-radius: 0 0 5px 0;
+}
+
+.green-border > li {
+    padding-left: 10px
+}
+
+h4 {
+    color: #05D962;
 }
 
 /* CHAT */
@@ -121,7 +177,7 @@ span {
     width: 100%;
     height: 10%;
     background-color: #343541;
-    border-top: 1px solid rgb(146, 146, 146);
+    border-top: 1px solid#05D962
 }
 
 #input-chat {
@@ -129,7 +185,6 @@ span {
     height: 50px;
     width: 660px;
     background-color: #444654;
-    box-shadow: none !important;
 }
 
 

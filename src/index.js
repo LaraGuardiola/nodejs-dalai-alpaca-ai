@@ -23,21 +23,19 @@ app.get('/api/stats', async (req, res) => {
     // RAM stats
     const [totalMem, freeMem] = [os.totalmem(), os.freemem()]
     const usedMem = totalMem - freeMem
-    const usedMemPercentage = Math.round(usedMem / totalMem * 100)
+    const usedMemPercentage = usedMem / totalMem * 100
 
     //CPU stats
     const [cpuUsage, cpuModel, cpuThreads] = await Promise.all([cpu.usage(), cpu.model(), cpu.count()])
 
     const stats = {
-        memoryUsage: `${usedMemPercentage}%`,
-        totalMemory: `${(totalMem / 1073741824).toFixed(2)} GB`,
-        freeMemory: `${(freeMem / 1073741824).toFixed(2)} GB`,
-        usedMemory: `${(usedMem / 1073741824).toFixed(2)} GB`,
-        cpuUsage: `${cpuUsage}%`,
+        memoryUsage: `${usedMemPercentage.toFixed(2)}`,
+        totalMemory: `${(totalMem / 1073741824).toFixed(2)}`,
+        usedMemory: `${(usedMem / 1073741824).toFixed(2)}`,
+        cpuUsage: `${cpuUsage}`,
         cpuModel: `${cpuModel}`,
-        cpuThreads: `${cpuThreads} threads`,
-        cpuCores: `${cpuThreads / 2} cores`,
-
+        cpuThreads: `${cpuThreads}`,
+        cpuCores: `${cpuThreads / 2}`,
     }
     res.json(stats)
 })

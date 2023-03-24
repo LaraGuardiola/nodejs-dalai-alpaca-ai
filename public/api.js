@@ -4,11 +4,11 @@ let modelInput = document.querySelector('#model')
 let tempInput = document.querySelector('#temp')
 let threadsInput = document.querySelector('#threads')
 let n_predictInput = document.querySelector('#n_predict')
-let totalMemory = document.querySelector('#total-memory')
-let memoryUsage = document.querySelector('#memory-usage')
-let usedMemory = document.querySelector('#used-memory')
-let freeMemory = document.querySelector('#free-memory')
-let cpuUsage = document.querySelector('#cpu-usage')
+let pcModel = document.querySelector('#pc-model')
+let threadsCores = document.querySelector('#threads-cores')
+let memory = document.querySelector('#memory')
+let cpuPercentage = document.querySelector('#cpu-percentage')
+let ramPercentage = document.querySelector('#ram-percentage')
 
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
@@ -36,7 +36,6 @@ const getConfig = () => {
 
 const callAlpaca = async (config) => {
     console.log(config)
-    console.log(config.model)
     const response = await fetch(`${ALPACA_URL}/alpaca`,{
         method: "POST",
         body: JSON.stringify(config),
@@ -53,13 +52,12 @@ const createChatbox = (msg, isAlpaca = true) => {
     let div = document.createElement("div")
     upperChat.append(div)
     div.classList.add("chat-box")
+
     if(isAlpaca) div.style.backgroundColor = "#444654"
 
     let p = document.createElement('p')
     p.textContent = msg
     div.append(p)
-
-    // upperChat.append(p)
 }
 
 const getStats = async () => {
@@ -67,19 +65,19 @@ const getStats = async () => {
         const stats = await fetch(`${ALPACA_URL}/api/stats`)
         const ram = await stats.json()
         computerStats = {...ram}
-        console.log(computerStats)
-        refreshMemoryUsage(computerStats)    
+        console.table(computerStats)
+        refreshStats(computerStats)    
     } catch (error) {
         console.error(error)
     }
 }
 
-const refreshMemoryUsage = (computerStats) => {
-    totalMemory.textContent = `Total memory: ${computerStats.totalMemory}`
-    memoryUsage.textContent = `Memory usage: ${computerStats.memoryUsage}`
-    usedMemory.textContent = `Used memory: ${computerStats.usedMemory}`
-    freeMemory.textContent = `Free memory: ${computerStats.freeMemory}`
-    cpuUsage.textContent = `Cpu usage: ${computerStats.cpuUsage}`
+const refreshStats = (computerStats) => {
+    pcModel.textContent = `${computerStats.cpuModel}`
+    threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
+    memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
+    cpuPercentage.textContent = `${computerStats.cpuUsage}%`
+    ramPercentage.textContent = `${computerStats.memoryUsage}%`
 }
 
 input.addEventListener('keypress', write)
@@ -88,5 +86,5 @@ getStats()
 
 setInterval(async () => {
     getStats(computerStats)
-}, 5000);
+}, 3000);
 

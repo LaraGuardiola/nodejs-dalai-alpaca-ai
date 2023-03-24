@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Alpaca AI 7B / 13B</title>
 </head>
 <body>
@@ -13,6 +14,7 @@
             <div class="logo"></div>
             <h2>Alpaca <span>AI</span> 7B / 13B</h2>
             <hr>
+            <h3>Settings</h3>
             <div class="settings-row">
                 <label for="model">Model:</label>
                 <select class ="side-menu-input" id="model" name="model">
@@ -32,14 +34,24 @@
                 <label for="n_predict">N_predict:</label>
                 <input class ="side-menu-input" id="n_predict" type="number" name="n_predict" value="128">
             </div>
+            <br>
+            <h3>System info</h3>
             <div class="system-usage">
-                <ul>
-                    <li id="total-memory"></li>
-                    <li id="memory-usage"></li>
-                    <li id="used-memory"></li>
-                    <li id="free-memory"></li>
-                    <li id="cpu-usage"></li>
-                </ul>
+                <p id="pc-model"></p>
+            </div>
+            <div class="usages">
+                <div class="CPU green-border">
+                    <h4>CPU <i class="fa-solid fa-microchip"></i></h4>
+                    <li id="threads-cores"></li>
+                    <br>
+                    <li class="usage-percentage" id="cpu-percentage">0%</li>
+                </div>
+                <div class="RAM green-border">
+                    <h4>RAM <i class="fa-solid fa-memory"></i></h4>
+                    <li id="memory">ejemplo</li>
+                    <br>
+                    <li class="usage-percentage" id="ram-percentage">0%</li>
+                </div>
             </div>
         </div>
         <div class="chat">
