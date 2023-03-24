@@ -37,6 +37,7 @@ const getConfig = () => {
 
 const callAlpaca = async (config) => {
     dots.forEach(dot => dot.style.display = "inline-block")
+    const { prompt } = config
     console.log(config)
     const response = await fetch(`${ALPACA_URL}/alpaca`,{
         method: "POST",
@@ -59,8 +60,10 @@ const createChatbox = (msg, isAlpaca = true) => {
     if(isAlpaca) div.style.backgroundColor = "#444654"
 
     let p = document.createElement('p')
-    p.textContent = msg
+    
     div.append(p)
+
+    washText(msg, p, isAlpaca)
 }
 
 const getStats = async () => {
@@ -68,7 +71,6 @@ const getStats = async () => {
         const stats = await fetch(`${ALPACA_URL}/api/stats`)
         const ram = await stats.json()
         computerStats = {...ram}
-        console.table(computerStats)
         refreshStats(computerStats)    
     } catch (error) {
         console.error(error)
@@ -81,6 +83,28 @@ const refreshStats = (computerStats) => {
     memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
     cpuPercentage.textContent = `${computerStats.cpuUsage}%`
     ramPercentage.textContent = `${computerStats.memoryUsage}%`
+}
+
+const washText = (alpaca, p, isAlpaca) => {
+    if(isAlpaca){
+        let ps = document.querySelectorAll("p")
+        let index;
+        ps.forEach((paragraph, idx) => {
+            if(paragraph === p){
+                index = idx
+            }
+        })
+        
+        p.textContent = alpaca
+            .replace(ps[index - 1].textContent,"")
+            .replace("[end of text]", "")
+            .replace("<end>", "")
+            .replaceAll("[29;200H", "")
+            .replaceAll("ÔÇÖ", ",")
+            .replaceAll("ÔÇ£", "\"")
+            .replaceAll("ÔÇØ", "")
+            .replaceAll("ÔÇö", "-")
+    }else p.textContent = alpaca
 }
 
 input.addEventListener('keypress', write)

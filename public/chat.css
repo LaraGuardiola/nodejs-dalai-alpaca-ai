@@ -180,8 +180,8 @@ h4 {
 
 .dot {
     display: none;
-    width: 0.5em;
-    height: 0.5em;
+    width: 0.3em;
+    height: 0.3em;
     border-radius: 50%;
     background-color: #05D962;
   }
