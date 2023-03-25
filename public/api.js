@@ -87,16 +87,10 @@ const refreshStats = (computerStats) => {
 
 const washText = (alpaca, p, isAlpaca) => {
     if(isAlpaca){
-        let ps = document.querySelectorAll("p")
-        let index;
-        ps.forEach((paragraph, idx) => {
-            if(paragraph === p){
-                index = idx
-            }
-        })
-        
+        let ps = [...document.querySelectorAll("p")]
+ 
         p.textContent = alpaca
-            .replace(ps[index - 1].textContent,"")
+            .replace(ps.at(-2).textContent,"")
             .replace("[end of text]", "")
             .replace("<end>", "")
             .replaceAll("[29;200H", "")
