@@ -184,23 +184,30 @@ h4 {
     height: 0.3em;
     border-radius: 50%;
     background-color: #05D962;
-  }
+}
 
-  .container {
+.container {
     position: relative;
     bottom: 10px;
     right: 50px;
-  }
+    color:#05D962;
+}
+
+.send-icon {
+    position: relative;
+    right: 35px;
+    color:#05D962;
+}
   
-  .container .dot:nth-last-child(1) {
+.container .dot:nth-last-child(1) {
     animation: jumpingAnimation 0.6s 0.1s ease-in infinite;
-  }
-  .container .dot:nth-last-child(2) {
+}
+.container .dot:nth-last-child(2) {
     animation: jumpingAnimation 0.6s 0.2s ease-in infinite;
-  }
-  .container .dot:nth-last-child(3) {
+}
+.container .dot:nth-last-child(3) {
     animation: jumpingAnimation 0.6s 0.3s ease-in infinite;
-  }
+}
   
   @keyframes jumpingAnimation {
     0%{

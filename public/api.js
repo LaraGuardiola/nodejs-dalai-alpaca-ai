@@ -10,6 +10,7 @@ let memory = document.querySelector('#memory')
 let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
 let dots = document.querySelectorAll('.dot')
+let plane = document.querySelector('.send-icon')
 
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
@@ -36,8 +37,8 @@ const getConfig = () => {
 }
 
 const callAlpaca = async (config) => {
+    plane.style.display = "none"
     dots.forEach(dot => dot.style.display = "inline-block")
-    const { prompt } = config
     console.log(config)
     const response = await fetch(`${ALPACA_URL}/alpaca`,{
         method: "POST",
@@ -48,10 +49,14 @@ const callAlpaca = async (config) => {
     })
     const { alpaca } = await response.json()
     dots.forEach(dot => dot.style.display = "none")
+    plane.style.display = "inline-block"
+        
     createChatbox(alpaca)
 }
 
 const createChatbox = (msg, isAlpaca = true) => {
+    // let chatbox = document.createElement("div")
+    // chatbox.classList.add("flex-chatbox")
     //div creation
     let div = document.createElement("div")
     upperChat.append(div)
