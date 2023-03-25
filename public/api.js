@@ -15,14 +15,17 @@ let plane = document.querySelector('.send-icon')
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
 
-const write = async (event) => {
+const sendByEnter = async (event) => {
     if(event.key === 'Enter'){
-        event.preventDefault()
-        createChatbox(input.value, false)
-        console.log({ prompt: input.value })
-        callAlpaca(getConfig())
-        input.value = ''
+        send(event)
     }
+}
+
+const send = async (event) => {
+    event.preventDefault()
+    createChatbox(input.value, false)
+    callAlpaca(getConfig())
+    input.value = ''
 }
 
 //Dalai library does this weird thing of splitting the word by . (Since I can only run Alpaca I left it as placeholder)
@@ -104,10 +107,12 @@ const washText = (alpaca, p, isAlpaca) => {
             .replaceAll("ÔÇØ", "")
             .replaceAll("ÔÇö", "-")
             .replaceAll("ÔÇô", ":")
+            .replaceAll("ÔÇª", "...")
     }else p.textContent = alpaca
 }
 
-input.addEventListener('keypress', write)
+document.body.addEventListener('keypress', sendByEnter)
+plane.addEventListener('click', send)
 
 getStats()
 
