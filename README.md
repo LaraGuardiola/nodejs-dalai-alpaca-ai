@@ -46,4 +46,7 @@ If you already have the models installed in another directory, you can easily ch
   const dalai = const dalai = new Dalai(PATH)
 ```
 Enjoy! :)
+
+
+
 ![Logo](https://github.com/LaraGuardiola/nodejs-dalai-alpaca-ai/blob/main/public/assets/alpaca.jpg)
