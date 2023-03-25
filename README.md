@@ -34,11 +34,11 @@ And then:
   pnpm start
 ```
 
-Finally just open your browser on http:localhost:3000
+Finally just open your browser on http:localhost:3000.
 
 # Considerations
 
-Right now Dalai it's looking for the models at the default root which is usually C:\Users\username\dalai\alpaca\models
+At the moment Dalai is looking for the models in the default root which is usually C:\Users\username\dalai\alpaca\models
 
 If you already have the models installed in another directory, you can easily change the path that Dalai reads by going to the alpaca.js file, just when Dalai is instantiated in line 3.
 
