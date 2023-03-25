@@ -15,17 +15,17 @@ let plane = document.querySelector('.send-icon')
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
 
-const sendByEnter = async (event) => {
-    if(event.key === 'Enter'){
-        send(event)
-    }
-}
-
 const send = async (event) => {
     event.preventDefault()
     createChatbox(input.value, false)
     callAlpaca(getConfig())
     input.value = ''
+}
+
+const sendByEnter = async (event) => {
+    if(event.key === 'Enter'){
+        send(event)
+    }
 }
 
 //Dalai library does this weird thing of splitting the word by . (Since I can only run Alpaca I left it as placeholder)
@@ -58,17 +58,22 @@ const callAlpaca = async (config) => {
 }
 
 const createChatbox = (msg, isAlpaca = true) => {
-    // let chatbox = document.createElement("div")
-    // chatbox.classList.add("flex-chatbox")
+    // let wrapper = document.createElement("div")
+    // upperChat.append(wrapper)
     //div creation
+    let img = document.createElement("div")
     let div = document.createElement("div")
+    img.classList.add("mini-logo")
+    upperChat.append(img)
     upperChat.append(div)
     div.classList.add("chat-box")
 
     if(isAlpaca) div.style.backgroundColor = "#444654"
+    if(!isAlpaca) img.style.backgroundImage = "url(\"./assets/snoop.jpeg\")"
 
     let p = document.createElement('p')
     
+    div.append(img)
     div.append(p)
 
     washText(msg, p, isAlpaca)

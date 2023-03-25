@@ -76,6 +76,18 @@ li {
     border: 3px solid white;
 }
 
+.mini-logo {
+    display: inline-block;
+    background-image: url("./assets/alpaca.jpg");
+    background-size: cover;
+    background-position: center;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin-right: 1em;
+}
+
 .side-menu-input {
     max-width: 120px;
 }
@@ -145,7 +157,14 @@ h4 {
     justify-content: flex-start;
 }
 
+.chat-box-wrapper {
+    display: flex;
+    width: 100%;
+    background-color: red;
+}
+
 .chat-box {
+    display: flex;
     width: 100%;
     background-color: #343541; 
     padding: 2em 25%;
