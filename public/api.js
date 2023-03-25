@@ -104,6 +104,7 @@ const washText = (alpaca, p, isAlpaca) => {
             .replaceAll("ÔÇ£", "\"")
             .replaceAll("ÔÇØ", "")
             .replaceAll("ÔÇö", "-")
+            .replaceAll("ÔÇô", ":")
     }else p.textContent = alpaca
 }
 
