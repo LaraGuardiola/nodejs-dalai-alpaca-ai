@@ -11,15 +11,21 @@ let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
 let dots = document.querySelectorAll('.dot')
 let plane = document.querySelector('.send-icon')
+let optExport = document.querySelector('#option-export')
+let optClean = document.querySelector('#option-clean')
+
 
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
+let exportJson = []
 
 const send = async (event) => {
-    event.preventDefault()
-    createChatbox(input.value, false)
-    callAlpaca(getConfig())
-    input.value = ''
+    if(input.value){
+        event.preventDefault()
+        createChatbox(input.value, false)
+        callAlpaca(getConfig())
+        input.value = ''
+    }
 }
 
 const sendByEnter = async (event) => {
@@ -40,8 +46,7 @@ const getConfig = () => {
 }
 
 const callAlpaca = async (config) => {
-    plane.style.display = "none"
-    dots.forEach(dot => dot.style.display = "inline-block")
+    displayDots()
     console.log(config)
     const response = await fetch(`${ALPACA_URL}/alpaca`,{
         method: "POST",
@@ -51,10 +56,18 @@ const callAlpaca = async (config) => {
         }
     })
     const { alpaca } = await response.json()
+    createChatbox(alpaca)
+    displayPlane()
+}
+
+const displayDots = () => {
+    plane.style.display = "none"
+    dots.forEach(dot => dot.style.display = "inline-block")
+}
+
+const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
-        
-    createChatbox(alpaca)
 }
 
 const createChatbox = (msg, isAlpaca = true) => {
@@ -74,6 +87,7 @@ const createChatbox = (msg, isAlpaca = true) => {
     div.append(p)
 
     washText(msg, p, isAlpaca)
+    checkOverflow()
 }
 
 const getStats = async () => {
@@ -113,8 +127,48 @@ const washText = (alpaca, p, isAlpaca) => {
     }else p.textContent = alpaca
 }
 
+const getQueriesJson = async () => {
+    const response = await fetch(`${ALPACA_URL}/api/json`, {
+        method: "POST",
+        body: JSON.stringify(config),
+        headers: {
+          "Content-Type": "application/json"
+        }
+    })
+    const json = response.json()
+}
+
+const hasChatOverflow = () => {
+    let chatBoxes = document.querySelectorAll('.chat-box')
+    let totalChatHeight = 0
+    chatBoxes.forEach(chat => {
+        totalChatHeight += chat.offsetHeight
+    })
+
+    console.log(totalChatHeight)
+
+    return totalChatHeight > upperChat.offsetHeight
+        ? true
+        : false
+}
+
+const checkOverflow = () => {
+    if(hasChatOverflow()){
+        upperChat.style.overflowY = "scroll"
+    }else {
+        upperChat.style.overflowY = "auto"
+    }
+}
+
+const cleanChat = () => {
+    let chatBoxes = document.querySelectorAll('.chat-box')
+    chatBoxes.forEach( chat => upperChat.removeChild(chat))
+    checkOverflow()
+}
+
 document.body.addEventListener('keypress', sendByEnter)
 plane.addEventListener('click', send)
+optClean.addEventListener('click', cleanChat)
 
 getStats()
 

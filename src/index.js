@@ -3,6 +3,7 @@ import { alpaca } from './alpaca.js'
 import morgan from "morgan"
 import os from 'os'
 import osu from 'node-os-utils'
+import { exportToJson } from './exportjson.js'
 
 const app = express()
 const cpu = osu.cpu
@@ -38,4 +39,9 @@ app.get('/api/stats', async (req, res) => {
         cpuCores: `${cpuThreads / 2}`,
     }
     res.json(stats)
+})
+
+app.get('/api/json', (req, res) => {
+    exportToJson(req.body)
+    return res.json(req.body)
 })

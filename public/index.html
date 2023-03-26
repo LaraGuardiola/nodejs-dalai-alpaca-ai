@@ -61,11 +61,15 @@
             </div>
             <div class="lower-chat">
                 <input tabindex="0" type="text" name="input-chat" id="input-chat">
-                <i class="fa-solid fa-paper-plane send-icon"></i>
+                <i contenteditable="false" class="fa-solid fa-paper-plane send-icon"></i>
                 <div class="container">
                     <div class="dot"></div>
                     <div class="dot"></div>
                     <div class="dot"></div>
+                </div>
+                <div class="options-menu">
+                    <span contenteditable="false" title="Export to .json" class="options" id="option-export"><i class="fa-solid fa-file-export"></i></span>
+                    <span contenteditable="false" title="Clean chat" class="options" id="option-clean"><i class="fa-solid fa-trash"></i></span>
                 </div>
             </div>
         </div>
