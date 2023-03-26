@@ -176,6 +176,7 @@ h4 {
 
 .upper-chat {
     height: 90%;
+    overflow-y: scroll;
 }
 
 .lower-chat{

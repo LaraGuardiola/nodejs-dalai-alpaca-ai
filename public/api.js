@@ -58,9 +58,6 @@ const callAlpaca = async (config) => {
 }
 
 const createChatbox = (msg, isAlpaca = true) => {
-    // let wrapper = document.createElement("div")
-    // upperChat.append(wrapper)
-    //div creation
     let img = document.createElement("div")
     let div = document.createElement("div")
     img.classList.add("mini-logo")
@@ -100,7 +97,7 @@ const refreshStats = (computerStats) => {
 
 const washText = (alpaca, p, isAlpaca) => {
     if(isAlpaca){
-        let ps = [...document.querySelectorAll("p")]
+        let ps = [...document.querySelectorAll(".chat-box > p")]
  
         p.textContent = alpaca
             .replace(ps.at(-2).textContent,"")

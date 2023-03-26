@@ -48,5 +48,4 @@ If you already have the models installed in another directory, you can easily ch
 Enjoy! :)
 
 
-
 ![Logo](https://github.com/LaraGuardiola/nodejs-dalai-alpaca-ai/blob/main/public/assets/alpaca.jpg)
