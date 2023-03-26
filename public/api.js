@@ -17,7 +17,6 @@ let optClean = document.querySelector('#option-clean')
 
 const ALPACA_URL = "http://localhost:3000"
 let computerStats = {}
-let exportJson = []
 
 const send = async (event) => {
     if(input.value){
@@ -48,15 +47,19 @@ const getConfig = () => {
 const callAlpaca = async (config) => {
     displayDots()
     console.log(config)
-    const response = await fetch(`${ALPACA_URL}/alpaca`,{
-        method: "POST",
-        body: JSON.stringify(config),
-        headers: {
-          "Content-Type": "application/json"
-        }
-    })
-    const { alpaca } = await response.json()
-    createChatbox(alpaca)
+    try {
+        const response = await fetch(`${ALPACA_URL}/alpaca`,{
+            method: "POST",
+            body: JSON.stringify(config),
+            headers: {
+              "Content-Type": "application/json"
+            }
+        })
+        const { alpaca } = await response.json()
+        createChatbox(alpaca)
+    } catch (error) {
+        console.error(error)
+    }
     displayPlane()
 }
 
@@ -78,8 +81,14 @@ const createChatbox = (msg, isAlpaca = true) => {
     upperChat.append(div)
     div.classList.add("chat-box")
 
-    if(isAlpaca) div.style.backgroundColor = "#444654"
-    if(!isAlpaca) img.style.backgroundImage = "url(\"./assets/snoop.jpeg\")"
+    if(isAlpaca) {
+        div.style.backgroundColor = "#444654"
+        div.classList.add('alpaca-convo')
+    }
+    if(!isAlpaca){
+        img.style.backgroundImage = "url(\"./assets/snoop.jpeg\")"
+        div.classList.add('user-convo')
+    } 
 
     let p = document.createElement('p')
     
@@ -127,15 +136,33 @@ const washText = (alpaca, p, isAlpaca) => {
     }else p.textContent = alpaca
 }
 
-const getQueriesJson = async () => {
+const getAlpacaJson = async () => {
+    let convo = getConvo()
     const response = await fetch(`${ALPACA_URL}/api/json`, {
         method: "POST",
-        body: JSON.stringify(config),
+        body: JSON.stringify(convo),
         headers: {
           "Content-Type": "application/json"
         }
     })
-    const json = response.json()
+    const json = await response.json()
+    console.log(json)
+}
+
+const getConvo = () => {
+    let convo = []
+    let userConvo = document.querySelectorAll('.user-convo')
+    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo')]
+    userConvo.forEach(chat => {
+        convo.push({
+            prompt: chat.textContent
+        })
+    })
+
+    for(let [key] in convo){
+        convo[key].alpaca = alpacaConvo[key].textContent
+    }
+    return convo
 }
 
 const hasChatOverflow = () => {
@@ -166,11 +193,13 @@ const cleanChat = () => {
     checkOverflow()
 }
 
+// Events
+
+window.addEventListener('onload', getStats)
 document.body.addEventListener('keypress', sendByEnter)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
-
-getStats()
+optExport.addEventListener('click', getAlpacaJson)
 
 setInterval(async () => {
     getStats(computerStats)

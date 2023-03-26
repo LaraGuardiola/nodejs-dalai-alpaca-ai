@@ -15,7 +15,6 @@ app.use(express.json())
 app.listen(3000, () => console.log('listening on port 3000'))
 
 app.post('/alpaca', async (req, res) => {
-    console.log(req.body)
     const result = await alpaca(req.body)
     res.json({ alpaca: result })
 })
@@ -41,7 +40,11 @@ app.get('/api/stats', async (req, res) => {
     res.json(stats)
 })
 
-app.get('/api/json', (req, res) => {
-    exportToJson(req.body)
-    return res.json(req.body)
+app.post('/api/json', async (req, res) => {
+    try {
+        await exportToJson(req.body)
+        return res.json(req.body)
+    } catch (error) {
+        console.log(error)
+    }
 })
