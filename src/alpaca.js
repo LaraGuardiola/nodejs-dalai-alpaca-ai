@@ -1,6 +1,15 @@
 import Dalai from "dalai";
 
-const dalai = new Dalai()
+//Checks if a custom path has been specified in the start script
+process.env.dalaiPath = process.argv[2] ?? ''
+
+export const dalai = new Dalai(process.env.dalaiPath)
+
+const dalaiModels = await dalai.installed()
+
+if(!dalaiModels.length){
+    await dalai.install("alpaca", "7B")
+}
 
 export const alpaca = async (config) => {
     let result = ""

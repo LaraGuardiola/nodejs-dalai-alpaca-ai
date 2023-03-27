@@ -195,7 +195,7 @@ const cleanChat = () => {
 
 // Events
 
-window.addEventListener('onload', getStats)
+window.addEventListener('DOMContentLoaded', getStats)
 document.body.addEventListener('keypress', sendByEnter)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)

@@ -1,7 +1,7 @@
 {
   "name": "dalai-implementation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web UI for alpaca AI. Built thanks to Dalai library",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
     "dev": "node --watch src/index.js "
   },
   "keywords": [],
-  "author": "",
+  "author": "Sergio Lara Guardiola",
   "license": "ISC",
   "dependencies": {
     "dalai": "^0.3.0",
