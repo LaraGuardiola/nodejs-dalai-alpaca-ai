@@ -1,2 +1,3 @@
-/node_modules/
-alpaca-queries.json
+node_modules
+
+out/

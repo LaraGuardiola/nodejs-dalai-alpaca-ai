@@ -1,7 +1,9 @@
-import fs from 'fs/promises';
+const fs = require('fs').promises;
 
-export const exportToJson = async (queries) => {
+const exportToJson = async (queries) => {
     await fs.writeFile('alpaca-queries.json', JSON.stringify(queries), (error) => {
         if (error) throw error
     })
 }
+
+module.exports = { exportToJson };

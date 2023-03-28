@@ -13,6 +13,8 @@ let dots = document.querySelectorAll('.dot')
 let plane = document.querySelector('.send-icon')
 let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
+let settingButton = document.querySelector('#settings-menu')
+let sideMenu = document.querySelector('.side-menu')
 
 
 const ALPACA_URL = "http://localhost:3000"
@@ -193,6 +195,16 @@ const cleanChat = () => {
     checkOverflow()
 }
 
+const showSideMenu = () => {
+    if(settingButton.className === "fa-solid fa-xmark"){
+        settingButton.className = "fa-solid fa-gear"
+        sideMenu.style.display = "none"
+    }else{
+        settingButton.className = "fa-solid fa-xmark"
+        sideMenu.style.display = "flex"
+    }
+}
+
 // Events
 
 window.addEventListener('DOMContentLoaded', getStats)
@@ -200,6 +212,9 @@ document.body.addEventListener('keypress', sendByEnter)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
+settingButton.addEventListener('click', showSideMenu)
+
+
 
 setInterval(async () => {
     getStats(computerStats)
