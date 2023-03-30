@@ -14,7 +14,7 @@ server.use(express.json())
 const createWindow = () => {
   const win = new BrowserWindow({
     show: false,
-    icon: path.join(__dirname, 'public', 'assets', 'alpaca-cropped.jpg')
+    icon: path.join(__dirname, 'icon', 'png', '128x128.png')
   })
 
   win.loadFile('./public/index.html')
