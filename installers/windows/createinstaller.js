@@ -22,7 +22,7 @@ function getInstallerConfig() {
 		exe: "Alpaca Web UI.exe",
 		setupExe: "Alpaca-Web-UI-setup-win-v" + version + ".exe",
 		setupIcon: path.join(rootPath, "icon", "win", "icon.ico"),
-		icon: path.join(rootPath, "icon", "win", "icon.ico"),
+		iconUrl: "https://raw.githubusercontent.com/LaraGuardiola/nodejs-dalai-alpaca-ai/feature/electron/icon/win/icon.ico",
 		loadingGif: path.join(rootPath, "icon", "png", "256x256.png")
 	});
 }

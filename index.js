@@ -18,7 +18,7 @@ const createWindow = () => {
   })
 
   win.loadFile('./public/index.html')
-  // win.setMenu(null)
+  win.setMenu(null)
   win.maximize()
   win.show()
 }
