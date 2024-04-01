@@ -1,2 +1,6 @@
 /node_modules/
 alpaca-queries.json
+environment.js
+*.gguf
+*.wav
+modelfile

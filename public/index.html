@@ -7,9 +7,16 @@
     <link rel="stylesheet" href="./chat.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="shortcut icon" type="image/png" href="./assets/alpaca.jpg">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css"> -->
+    <link rel="stylesheet" href="atom-one-dark.css">
+    <script type="module">
+        import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js';
+        hljs.highlightAll()
+    </script>
     <title>Alpaca AI 7B / 13B</title>
 </head>
 <body>
+    
     <div class="mainspace">
         <div class="side-menu">
             <div class="logo"></div>
@@ -19,21 +26,7 @@
             <div class="settings-row">
                 <label for="model">Model:</label>
                 <select tabindex="1" class ="side-menu-input" id="model" name="model">
-                    <option value="7B">7B</option>
-                    <option value="13B">13B</option>
                 </select>
-            </div>
-            <div class="settings-row">
-                <label title ="In short, the lower the temperature the more deterministic the results in the sense that the highest probable next token is always picked. Increasing temperature could lead to more randomness encouraging more diverse or creative outputs. We are essentially increasing the weights of the other possible tokens. In terms of application, we might want to use a lower temperature value for tasks like fact-based QA to encourage more factual and concise responses. For poem generation or other creative tasks, it might be beneficial to increase the temperature value." for="temp">Temp:</label>
-                <input tabindex="2" class ="side-menu-input" id="temp" type="number" name="temp" value="0.9">
-            </div>
-            <div class="settings-row">
-                <label for="threads">Threads:</label>
-                <input tabindex="3" class ="side-menu-input" id="threads" type="number" name="threads" value="8">
-            </div>
-            <div class="settings-row">
-                <label for="n_predict">N_predict:</label>
-                <input tabindex="4" class ="side-menu-input" id="n_predict" type="number" name="n_predict" value="128">
             </div>
             <br>
             <h3>System info</h3>
@@ -57,11 +50,11 @@
         </div>
         <div class="chat">
             <div class="upper-chat">
-            
+                <!-- <pre><code>function() { console.log('test')) }</code></pre> -->
             </div>
             <div class="lower-chat">
-                <input tabindex="0" type="text" name="input-chat" id="input-chat">
-                <i contenteditable="false" class="fa-solid fa-paper-plane send-icon"></i>
+                <textarea tabindex="0" type="text" name="input-chat" id="input-chat"></textarea>
+                <i contenteditable="false" class="fa-solid fa-paper-plane send-icon" title="Send message"></i>
                 <div class="container">
                     <div class="dot"></div>
                     <div class="dot"></div>
@@ -74,6 +67,6 @@
             </div>
         </div>
     </div>
-    <script src="./api.js"></script>
+    <script src="app.js" type="module"></script>
 </body>
 </html>
