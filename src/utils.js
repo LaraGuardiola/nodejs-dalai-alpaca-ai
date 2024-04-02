@@ -19,7 +19,8 @@ export const getStats = async () => {
 
     //CPU stats
     const [cpuUsage, cpuModel, cpuThreads] = await Promise.all([cpu.usage(), cpu.model(), cpu.count()])
-
+    let tst = cpu.usage(1000)
+    // console.log(getCpuAvg())
     const stats = {
         memoryUsage: `${usedMemPercentage.toFixed(2)}`,
         totalMemory: `${(totalMem / 1073741824).toFixed(2)}`,

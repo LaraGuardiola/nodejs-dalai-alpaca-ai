@@ -29,7 +29,9 @@ const send = async (event) => {
         event.preventDefault()
         createChatbox(input.value, false)
         LLMContext.push({ role: 'user', content: input.value})
-        socket.send(input.value)
+        let modelOption = document.querySelector('option:checked').value
+        let messageContext = JSON.stringify([input.value, modelOption])
+        socket.send(messageContext)
         callLLM(input.value)
         input.value = ''
     }
@@ -174,27 +176,11 @@ const hasChatOverflow = () => {
         totalChatHeight += chat.offsetHeight
     })
 
-    console.log("Total chat height:", totalChatHeight);
-    console.log("Upper chat height:", upperChat.offsetHeight);
-    console.log("Upper chat SCROLL height:", upperChat.scrollHeight);
-
     if(totalChatHeight > upperChat.offsetHeight) {
         upperChat.scrollTo({
             top: upperChat.scrollHeight,
             behavior: 'instant'
         })
-    }
-
-    return totalChatHeight > upperChat.offsetHeight
-        ? true
-        : false
-}
-
-const checkOverflow = () => {
-    if(hasChatOverflow()){
-        upperChat.style.overflowY = "scroll"
-    }else {
-        upperChat.style.overflowY = "auto"
     }
 }
 
@@ -203,7 +189,6 @@ const cleanChat = () => {
     chatBoxes.forEach( chat => upperChat.removeChild(chat))
     LLMContext = cleanHistoryChat()
     console.log(LLMContext)
-    checkOverflow()
 }
 
 const cleanHistoryChat = () => {
@@ -214,6 +199,10 @@ const cleanHistoryChat = () => {
 // FORMATS
 
 const formatLLMResponse = (msg) => {
+    if(previousChar.includes('.') && msg[0] !==" ") {
+        msg = msg
+        previousChar = msg
+    }
     if(msg.includes('.')) {
         if(msg.length === 1 && isNaN(previousChar)) {
             msg = msg + '<br><br>'
@@ -223,27 +212,47 @@ const formatLLMResponse = (msg) => {
         }
         if(msg.length === 2 && isNaN(msg[0])) {
             msg = msg + '<br><br>'
+            
         }
+        previousChar = msg
     }
 
     if(msg === ":") {
         msg = msg + '<br><br>'
+        previousChar = msg
     }
 
     return msg
 }
 
 const formatCodeSnippets = () => {
+    let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
+    let LLMResponseP = LLMResponse.querySelector('p')
+
     const checkSnippets = setInterval(() => {
-        let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
-        let LLMResponseP = LLMResponse.querySelector('p')
         let replacedStr = LLMResponseP.innerHTML.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre><br>');
+     
         LLMResponseP.innerHTML = replacedStr
         hljs.highlightAll()
     },1000)
     setTimeout(() => {
         clearInterval(checkSnippets);
     }, 20000);
+}
+
+const formatAfterResponse = () => {
+    let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
+    let LLMResponseP = LLMResponse.querySelector('p')
+    let code = [...LLMResponseP.querySelectorAll('pre code')]
+    let lang
+    // let lines
+    code.forEach(snippet => {
+        let lines = snippet?.innerHTML.split('\n')
+        lang = lines.shift()
+        
+        snippet.innerHTML = lines.join('\n')
+        console.log(lines)
+    })
 }
 
 const init = async () => {
@@ -265,8 +274,8 @@ setInterval(async () => {
 // WSS
 
 socket.addEventListener('open', () => {
-    console.log('WebSocket connection established');
-});
+    console.log('WebSocket connection established')
+})
 
 socket.addEventListener('message', (event) => {
     
@@ -278,7 +287,10 @@ socket.addEventListener('message', (event) => {
         msg = formatLLMResponse(msg)
 
         alpacaConvo.at(-1).innerHTML += msg
-        previousChar = event.data
+        // previousChar = event.data
+    }else {
+        // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯
+        formatAfterResponse()
     }
     
     hasChatOverflow()

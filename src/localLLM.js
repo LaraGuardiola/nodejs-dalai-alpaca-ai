@@ -21,8 +21,10 @@ export const restCallLLM = async (record) => {
 
 //WSS - Takes socket and the message
 export const wssCallLLM = async (ws, msg) => {
-    LLMContext.push({ role: 'user', content: msg.toString() })
-    const response = await ollama.chat({ model: 'starling-lm', messages: LLMContext, stream: true })
+    console.log(msg)
+    let [message, modelOption] = JSON.parse(msg)
+    LLMContext.push({ role: 'user', content: message.toString() })
+    const response = await ollama.chat({ model: modelOption, messages: LLMContext, stream: true })
 
     const processResponse = async () => {
         for await (const part of response) {

@@ -3,6 +3,7 @@ pre code.hljs {
   overflow-x: auto;
   padding: 1em;
   user-select: all;
+  white-space: break-spaces;
 }
 code.hljs {
   padding: 3px 5px

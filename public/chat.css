@@ -171,7 +171,7 @@ h4 {
 .chat-box p {
     line-height: 150%;
     user-select: all;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .upper-chat {
@@ -203,6 +203,13 @@ h4 {
     line-height: 150%;
     font-family: 'montserrat';
     font-size: 1em;
+    caret-color: #05D962;
+}
+
+#input-chat:focus {
+    /* I don't know why but needs both :S */
+    outline: #05D962;
+    border-color: #05D962;
 }
 
 #input-chat::-webkit-scrollbar {
@@ -283,5 +290,6 @@ pre > code > span{
 code {
     font-family: 'Montserrat';
     font-size: 16px;
+    width: 100%;
 }
 
