@@ -28,7 +28,6 @@ textarea {
     min-height: 2rem;
     border-radius: 5px;
     padding-left: 10px;
-    /* cursor: not-allowed; */
 }
 
 textarea:disabled {
@@ -200,6 +199,15 @@ h4 {
     height: 10%;
     background-color: #343541;
     border-top: 1px solid#05D962
+}
+
+.snippet-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #343541;
+    color: #05D962;
+    padding: 0.8em;
+    border-bottom: 1px solid #05D962;
 }
 
 #input-chat {

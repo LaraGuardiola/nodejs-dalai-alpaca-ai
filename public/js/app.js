@@ -23,6 +23,8 @@ let LLMContext = [
     // { role : 'user', content: input  } 
 ]
 
+//MAIN FUNCTIONS
+
 const send = async (event) => {
     if(input.value){
         event.preventDefault()
@@ -42,7 +44,7 @@ const sendByEnter = async (event) => {
     }
 }
 
-const cleanInputChat = () => input.value = ''
+// REQUESTS
 
 const getModelList = async () => {
     try {
@@ -63,6 +65,30 @@ const getModelList = async () => {
     } catch (error) {
         console.log(error)
     }
+}
+
+const getStats = async () => {
+    try {
+        const stats = await fetch(`${ALPACA_URL}/api/stats`)
+        const ram = await stats.json()
+        computerStats = {...ram}
+        refreshStats(computerStats)    
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+const getAlpacaJson = async () => {
+    let convo = getConvo()
+    const response = await fetch(`${ALPACA_URL}/api/json`, {
+        method: "POST",
+        body: JSON.stringify(convo),
+        headers: {
+          "Content-Type": "application/json"
+        }
+    })
+    const json = await response.json()
+    console.log(json)
 }
 
 const callLLM = async () => {
@@ -86,6 +112,10 @@ const callLLM = async () => {
     // displayPlane()
 }
 
+// UTILS
+
+const cleanInputChat = () => input.value = ''
+
 const displayDots = () => {
     plane.style.display = "none"
     dots.forEach(dot => dot.style.display = "inline-block")
@@ -95,7 +125,34 @@ const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
     input.disabled = false
+    input.focus()
 }
+
+const refreshStats = (computerStats) => {
+    pcModel.textContent = `${computerStats.cpuModel}`
+    threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
+    memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
+    cpuPercentage.textContent = `${computerStats.cpuUsage}%`
+    ramPercentage.textContent = `${computerStats.memoryUsage}%`
+}
+
+const getConvo = () => {
+    let convo = []
+    let userConvo = document.querySelectorAll('.user-convo')
+    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo')]
+    userConvo.forEach(chat => {
+        convo.push({
+            prompt: chat.textContent
+        })
+    })
+
+    for(let [key] in convo){
+        convo[key].alpaca = alpacaConvo[key].textContent
+    }
+    return convo
+}
+
+// LAYOUT
 
 const createChatbox = (msg = '', isAlpaca = true) => {
     if(isAlpaca) input.disabled = true
@@ -121,54 +178,6 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     div.append(p)
 
     p.textContent = msg
-}
-
-const getStats = async () => {
-    try {
-        const stats = await fetch(`${ALPACA_URL}/api/stats`)
-        const ram = await stats.json()
-        computerStats = {...ram}
-        refreshStats(computerStats)    
-    } catch (error) {
-        console.error(error)
-    }
-}
-
-const refreshStats = (computerStats) => {
-    pcModel.textContent = `${computerStats.cpuModel}`
-    threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
-    memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
-    cpuPercentage.textContent = `${computerStats.cpuUsage}%`
-    ramPercentage.textContent = `${computerStats.memoryUsage}%`
-}
-
-const getAlpacaJson = async () => {
-    let convo = getConvo()
-    const response = await fetch(`${ALPACA_URL}/api/json`, {
-        method: "POST",
-        body: JSON.stringify(convo),
-        headers: {
-          "Content-Type": "application/json"
-        }
-    })
-    const json = await response.json()
-    console.log(json)
-}
-
-const getConvo = () => {
-    let convo = []
-    let userConvo = document.querySelectorAll('.user-convo')
-    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo')]
-    userConvo.forEach(chat => {
-        convo.push({
-            prompt: chat.textContent
-        })
-    })
-
-    for(let [key] in convo){
-        convo[key].alpaca = alpacaConvo[key].textContent
-    }
-    return convo
 }
 
 const hasChatOverflow = () => {
@@ -199,6 +208,7 @@ const cleanHistoryChat = () => {
 }
 
 // FORMATS
+
 const formatLLMResponse = (msg, alpacaConvo) => {
     // converts special characters so it doesn't break HTML snippets
     msg = formatHTMLSnippetSpecialCharacter(msg)
@@ -219,7 +229,8 @@ const formatHTMLSnippetSpecialCharacter = (msg) => {
 }
 
 const formatCodeSnippets = (alpacaConvo) => {
-    let replacedStr = alpacaConvo.innerHTML.replace(/```(.*?)```/gs, '<br><pre><code>$1</code></pre>')
+    //envelops the snippet inside <pre><code>
+    let replacedStr = alpacaConvo.innerHTML.replace(/```(.*?)```/gs, '<br><div class="snippet-header"></div><pre><code>$1</code></pre>')
     alpacaConvo.innerHTML = replacedStr
     hljs.highlightAll()
 }
@@ -228,12 +239,13 @@ const formatAfterResponse = () => {
     let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
     let LLMResponseP = LLMResponse.querySelector('p')
     let code = [...LLMResponseP.querySelectorAll('pre code')]
+    let codeHeaders = [...LLMResponseP.querySelectorAll('.snippet-header')]
     let lang //for the future
 
-    code.forEach(snippet => {
+    code.forEach((snippet, index) => {
         let lines = snippet?.innerHTML.split('\n')
         lang = lines.shift()
-        
+        codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
         snippet.innerHTML = lines.join('\n')
         console.log(lines)
     })
@@ -275,5 +287,3 @@ socket.addEventListener('message', (event) => {
     
     hasChatOverflow()
 })
-
-
