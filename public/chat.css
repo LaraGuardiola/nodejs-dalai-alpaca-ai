@@ -70,7 +70,7 @@ li {
 }
 
 .logo {
-    background-image: url("./assets/alpaca.jpg");
+    background-image: url("./assets/pandora-img.jpg");
     background-size: cover;
     background-position: center;
     height: 150px;
@@ -81,7 +81,7 @@ li {
 
 .mini-logo {
     display: inline-block;
-    background-image: url("./assets/alpaca.jpg");
+    background-image: url("./assets/pandora-img.jpg");
     background-size: cover;
     background-position: center;
     height: 40px;

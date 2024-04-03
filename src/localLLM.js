@@ -1,4 +1,3 @@
-// import { createCompletion, loadModel } from '../node_modules/gpt4all/src/gpt4all.js'
 import ollama from 'ollama'
 
 let LLMResponse = ''

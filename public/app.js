@@ -32,8 +32,8 @@ const send = async (event) => {
         let modelOption = document.querySelector('option:checked').value
         let messageContext = JSON.stringify([input.value, modelOption])
         socket.send(messageContext)
-        callLLM(input.value)
-        input.value = ''
+        callLLM()
+        cleanInputChat()
     }
 }
 
@@ -42,6 +42,8 @@ const sendByEnter = async (event) => {
         send(event)
     }
 }
+
+const cleanInputChat = () => input.value = ''
 
 const getModelList = async () => {
     try {
@@ -64,7 +66,7 @@ const getModelList = async () => {
     }
 }
 
-const callLLM = async (msg) => {
+const callLLM = async () => {
     displayDots()
     try {
         const response = await fetch(`${ALPACA_URL}/api/llm`,{
@@ -226,6 +228,7 @@ const formatLLMResponse = (msg) => {
 }
 
 const formatCodeSnippets = () => {
+    // TODO: Should be inside the wss, this 2 elements would have been created by the time
     let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
     let LLMResponseP = LLMResponse.querySelector('p')
 
@@ -283,9 +286,16 @@ socket.addEventListener('message', (event) => {
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')]
 
     if(event.data !== "{done: true}") {
-        let msg = event.data
-        msg = formatLLMResponse(msg)
-
+        let msg = `${event.data}`
+      
+        // every time I encounter this char if it's inside a snippet it disappears as it's recognized as a comment
+        if(msg.includes('<')) {
+            let arr = msg.split('')
+            let idx = arr.indexOf('<')
+            arr[idx] = '&lt;'
+            msg = arr.join('')
+        }
+        formatLLMResponse(msg)
         alpacaConvo.at(-1).innerHTML += msg
         // previousChar = event.data
     }else {

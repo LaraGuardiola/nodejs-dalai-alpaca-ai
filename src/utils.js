@@ -19,8 +19,7 @@ export const getStats = async () => {
 
     //CPU stats
     const [cpuUsage, cpuModel, cpuThreads] = await Promise.all([cpu.usage(), cpu.model(), cpu.count()])
-    let tst = cpu.usage(1000)
-    // console.log(getCpuAvg())
+
     const stats = {
         memoryUsage: `${usedMemPercentage.toFixed(2)}`,
         totalMemory: `${(totalMem / 1073741824).toFixed(2)}`,
@@ -51,7 +50,7 @@ export const getModels = async () => {
         arrModels.splice(0,1)
         arrModels.splice(-1,1)
 
-        models = arrModels.map(model => model.split(':')[0])
+        models = arrModels.map(model => model.split(' ')[0])
         return models
     } catch (error) {
         console.log(error)
