@@ -83,7 +83,7 @@ const callLLM = async () => {
     } catch (error) {
         console.error(error)
     }
-    displayPlane()
+    // displayPlane()
 }
 
 const displayDots = () => {
@@ -94,9 +94,11 @@ const displayDots = () => {
 const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
+    input.disabled = false
 }
 
 const createChatbox = (msg = '', isAlpaca = true) => {
+    if(isAlpaca) input.disabled = true
     let img = document.createElement("div")
     let div = document.createElement("div")
     img.classList.add("mini-logo")
@@ -109,7 +111,7 @@ const createChatbox = (msg = '', isAlpaca = true) => {
         div.classList.add('alpaca-convo')
     }
     if(!isAlpaca){
-        img.style.backgroundImage = "url(\"./assets/snoop.jpeg\")"
+        img.style.backgroundImage = "url(\"./assets/img/snoop.jpeg\")"
         div.classList.add('user-convo')
     } 
 
@@ -260,7 +262,7 @@ socket.addEventListener('open', () => {
 })
 
 socket.addEventListener('message', (event) => {
-    console.log(event.data);
+    // console.log(event.data);
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
 
     if(event.data !== "{done: true}") {
@@ -268,7 +270,10 @@ socket.addEventListener('message', (event) => {
     }else {
         // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
         formatAfterResponse()
+        displayPlane()
     }
     
     hasChatOverflow()
-});
+})
+
+
