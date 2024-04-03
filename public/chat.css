@@ -76,7 +76,7 @@ li {
     height: 150px;
     width: 150px;
     border-radius: 75px;
-    border: 3px solid white;
+    border: 3px solid #05D962;
 }
 
 .mini-logo {
@@ -166,12 +166,15 @@ h4 {
     padding: 2em;
     padding-right: 10em;
     padding-left: 10em;
+    width: 100%;
 }
 
 .chat-box p {
     line-height: 150%;
     user-select: all;
     word-break: break-word;
+    /* thanks god for pre-line, text comes already formatted so I don't have to hack my way */
+    white-space: pre-line;
 }
 
 .upper-chat {

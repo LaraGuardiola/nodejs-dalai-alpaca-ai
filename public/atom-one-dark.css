@@ -39,8 +39,8 @@ hue-6-2: #e6c07b
 .hljs-doctag,
 .hljs-keyword,
 .hljs-formula {
-  color: #c678dd
-
+  color: #c678dd;
+  user-select: text;
 }
 .hljs-section,
 .hljs-name,
@@ -57,7 +57,8 @@ hue-6-2: #e6c07b
 .hljs-addition,
 .hljs-attribute,
 .hljs-meta .hljs-string {
-  color: #98c379
+  color: #98c379;
+  user-select: text;
 }
 .hljs-attr,
 .hljs-variable,
