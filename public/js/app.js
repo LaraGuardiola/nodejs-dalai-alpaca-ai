@@ -16,7 +16,8 @@ let notification = document.querySelector('.notification')
 const notifications = {
     clipboard: "Snippet has been copied to clipboard",
     json: "Successfully created json on the repository",
-    clean: "Successfully cleaned the chat"
+    clean: "Successfully cleaned the chat",
+    chat_is_empty: "The chat is empty"
 }
 
 const ALPACA_URL = "http://localhost:3000"
@@ -90,6 +91,7 @@ const getStats = async () => {
 
 const getAlpacaJson = async () => {
     let convo = getConvo()
+    if(convo.length === 0) return showNotification(notifications.chat_is_empty)
     const response = await fetch(`${ALPACA_URL}/api/json`, {
         method: "POST",
         body: JSON.stringify(convo),
@@ -98,6 +100,7 @@ const getAlpacaJson = async () => {
         }
     })
     const json = await response.json()
+    showNotification(notifications.json)
     console.log(json)
 }
 
@@ -211,6 +214,7 @@ const cleanChat = () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
     chatBoxes.forEach( chat => upperChat.removeChild(chat))
     LLMContext = cleanHistoryChat()
+    showNotification(notifications.clean)
     console.log(LLMContext)
 }
 
