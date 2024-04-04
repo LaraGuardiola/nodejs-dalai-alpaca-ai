@@ -29,11 +29,7 @@ textarea {
     padding-left: 10px;
 }
 
-textarea:disabled {
-    cursor: not-allowed;
-}
-
-.cursor-forbbiden {
+#input-chat:disabled {
     cursor: not-allowed;
 }
 
@@ -216,7 +212,7 @@ h4 {
     align-items: center;
     justify-content: flex-start;
     color: white;
-    min-height: 50px;
+    min-height: 58px;
     height: auto;
     max-height: 200px;
     width: 660px;
@@ -231,12 +227,13 @@ h4 {
     overflow-wrap: anywhere;
     overflow-y: auto;
     border-radius: 5px;
+    border: 1px solid #444654;
     /* text-align: center; */
 }
 
 #input-chat:focus {
     /* I don't know why but needs both :S */
-    outline: #05D962;
+    outline: none;
     border-color: #05D962;
 }
 

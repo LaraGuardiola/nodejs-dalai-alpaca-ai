@@ -47,7 +47,6 @@ const send = async (event) => {
 
 const sendByEnter = async (event) => {
     if(event.key === 'Enter' && event.shiftKey){
-        console.log('does something')
         return
     }
     if(event.key === 'Enter'){
@@ -129,13 +128,15 @@ const cleanInputChat = () => input.innerHTML = ''
 
 const displayDots = () => {
     plane.style.display = "none"
+    input.removeAttribute('contenteditable')
     dots.forEach(dot => dot.style.display = "inline-block")
+    input.blur()
 }
 
 const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
-    input.disabled = false
+    input.setAttribute('contenteditable','true')
     input.focus()
 }
 
