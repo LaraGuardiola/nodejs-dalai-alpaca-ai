@@ -2,7 +2,7 @@ pre code.hljs {
   display: block;
   overflow-x: auto;
   padding: 1em;
-  user-select: all;
+  user-select: text;
   white-space: break-spaces;
 }
 code.hljs {

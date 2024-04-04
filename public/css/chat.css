@@ -4,7 +4,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    user-select: none;
 }
 
 @font-face {
@@ -75,6 +74,7 @@ li {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+    user-select: none;
 }
 
 .logo {
@@ -179,7 +179,7 @@ h4 {
 
 .chat-box p {
     line-height: 150%;
-    user-select: all;
+    user-select: text;
     word-break: break-word;
     /* thanks god for pre-line, text comes already formatted so I don't have to hack my way */
     white-space: pre-line;
@@ -198,7 +198,8 @@ h4 {
     min-height: 100px;
     height: 10%;
     background-color: #343541;
-    border-top: 1px solid#05D962
+    border-top: 1px solid#05D962;
+    user-select: none;
 }
 
 .snippet-header {
@@ -302,9 +303,10 @@ i:hover {
     padding: 0.25em;
 }
 
+/* snippets */
 
 pre > code > span{
-    user-select: all;
+    user-select: text;
 }
 
 code {
@@ -313,3 +315,50 @@ code {
     width: 100%;
 }
 
+
+/* notifications */
+.notification {
+    display: flex;
+    align-items: center;
+    font-family: 'Montserrat';
+    color: white;
+    padding: 1em;
+    border: 1px solid #05D962;
+    border-radius: 5px;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #202123;
+    z-index: 9;
+    /* animation: fadeAndMove 1s ease-in-out; */
+}
+
+.notification i {
+    color:#05D962;
+    margin-right: 0.5em;
+}
+
+@keyframes fadeAndMove {
+    0% {
+      opacity: 0;
+      top: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      top: 10%;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        top: 10%;
+    }
+    100% {
+        opacity: 0;
+        top: 0;
+    }
+}
