@@ -32,12 +32,13 @@ let LLMContext = [
 //MAIN FUNCTIONS
 
 const send = async (event) => {
-    if(input.value){
+    console.log(input.textContent)
+    if(input.textContent){
         event.preventDefault()
-        createChatbox(input.value, false)
-        LLMContext.push({ role: 'user', content: input.value})
+        createChatbox(input.innerHTML.replaceAll('<br>','\n'), false)
+        LLMContext.push({ role: 'user', content: input.textContent})
         let modelOption = document.querySelector('option:checked').value
-        let messageContext = JSON.stringify([input.value, modelOption])
+        let messageContext = JSON.stringify([input.textContent, modelOption])
         socket.send(messageContext)
         callLLM()
         cleanInputChat()
@@ -45,6 +46,10 @@ const send = async (event) => {
 }
 
 const sendByEnter = async (event) => {
+    if(event.key === 'Enter' && event.shiftKey){
+        console.log('does something')
+        return
+    }
     if(event.key === 'Enter'){
         send(event)
     }
@@ -120,7 +125,7 @@ const callLLM = async () => {
 
 // UTILS
 
-const cleanInputChat = () => input.value = ''
+const cleanInputChat = () => input.innerHTML = ''
 
 const displayDots = () => {
     plane.style.display = "none"

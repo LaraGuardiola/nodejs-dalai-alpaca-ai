@@ -3,6 +3,7 @@ import os from 'os'
 import osu from 'node-os-utils'
 import { exec } from "child_process"
 import { promisify } from "util"
+import { cpuUsage } from 'os-utils';
 
 export const exportToJson = async (queries) => {
     await fs.writeFile('alpaca-queries.json', JSON.stringify(queries), (error) => {
@@ -32,6 +33,16 @@ export const getStats = async () => {
 
     return stats
 }
+
+function displayCPUUsage() {
+    setInterval(() => {
+        cpuUsage(v => 
+            console.log("CPU Usage (%): " + (v*1000).toFixed(2))
+        );
+    }, 1000); //Every second.
+}
+
+// displayCPUUsage();
 
 export const getModels = async () => {
     const execAsync =  promisify(exec)

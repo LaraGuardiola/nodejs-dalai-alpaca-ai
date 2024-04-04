@@ -186,7 +186,7 @@ h4 {
 }
 
 .upper-chat {
-    height: 90%;
+    height: 100%;
     overflow-y: auto;
 }
 
@@ -195,11 +195,11 @@ h4 {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 100px;
-    height: 10%;
+    max-height: 300px;
     background-color: #343541;
     border-top: 1px solid#05D962;
     user-select: none;
+    padding: 1em;
 }
 
 .snippet-header {
@@ -212,6 +212,9 @@ h4 {
 }
 
 #input-chat {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     color: white;
     min-height: 50px;
     height: auto;
@@ -225,12 +228,23 @@ h4 {
     font-family: 'montserrat';
     font-size: 1em;
     caret-color: #05D962;
+    overflow-wrap: anywhere;
+    overflow-y: auto;
+    border-radius: 5px;
+    /* text-align: center; */
 }
 
 #input-chat:focus {
     /* I don't know why but needs both :S */
     outline: #05D962;
     border-color: #05D962;
+}
+
+#input-chat::placeholder {
+    text-align: left;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #input-chat::-webkit-scrollbar {
