@@ -13,22 +13,22 @@ export const restCallLLM = async (record) => {
     const response = await ollama.chat({
         // model: 'starling-lm',
         model: 'mixtral-8x7b',
-        messages: record,
+        messages: record
     })
     return response.message.content
 }
 
 //WSS - Takes socket and the message
 export const wssCallLLM = async (ws, msg) => {
-    console.log(msg)
     let [message, modelOption] = JSON.parse(msg)
     LLMContext.push({ role: 'user', content: message.toString() })
     const response = await ollama.chat({ model: modelOption, messages: LLMContext, stream: true })
-
+    let responseStr = ''
     const processResponse = async () => {
         for await (const part of response) {
             // process.stdout.write(part.message.content)
             LLMResponse = LLMResponse + part.message.content
+            responseStr += part.message.content
             ws.send(part.message.content)
         }
         return true
@@ -36,6 +36,8 @@ export const wssCallLLM = async (ws, msg) => {
 
     if(await processResponse()) {
         ws.send('{done: true}')
+        LLMContext.push({ role: 'assistant', content: responseStr.toString() })
+        // console.log(LLMContext)
     }
 }
 

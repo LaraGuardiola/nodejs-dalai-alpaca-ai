@@ -11,38 +11,34 @@ export const exportToJson = async (queries) => {
     })
 }
 
-export const getStats = async () => {
-    const cpu = osu.cpu
-    // RAM stats
-    const [totalMem, freeMem] = [os.totalmem(), os.freemem()]
-    const usedMem = totalMem - freeMem
-    const usedMemPercentage = usedMem / totalMem * 100
-
-    //CPU stats
-    const [cpuUsage, cpuModel, cpuThreads] = await Promise.all([cpu.usage(), cpu.model(), cpu.count()])
-
-    const stats = {
-        memoryUsage: `${usedMemPercentage.toFixed(2)}`,
-        totalMemory: `${(totalMem / 1073741824).toFixed(2)}`,
-        usedMemory: `${(usedMem / 1073741824).toFixed(2)}`,
-        cpuUsage: `${cpuUsage}`,
-        cpuModel: `${cpuModel}`,
-        cpuThreads: `${cpuThreads}`,
-        cpuCores: `${cpuThreads / 2}`,
-    }
-
-    return stats
-}
-
-function displayCPUUsage() {
+export const getStats = async (ws) => {
     setInterval(() => {
-        cpuUsage(v => 
-            console.log("CPU Usage (%): " + (v*1000).toFixed(2))
-        );
-    }, 1000); //Every second.
-}
+        cpuUsage(async (v) => {
+            const cpu = osu.cpu
+            // RAM stats
+            const [totalMem, freeMem] = [os.totalmem(), os.freemem()]
+            const usedMem = totalMem - freeMem
+            const usedMemPercentage = usedMem / totalMem * 100
 
-// displayCPUUsage();
+            //CPU stats
+            const [cpuUsage, cpuModel, cpuThreads] = await Promise.all([cpu.usage(), cpu.model(), cpu.count()])
+            let CPU = (v*1000).toFixed(2)
+
+            const stats = {
+                memoryUsage: `${usedMemPercentage.toFixed(2)}`,
+                totalMemory: `${(totalMem / 1073741824).toFixed(2)}`,
+                usedMemory: `${(usedMem / 1073741824).toFixed(2)}`,
+                cpuUsage: `${CPU}`,
+                cpuModel: `${cpuModel}`,
+                cpuThreads: `${cpuThreads}`,
+                cpuCores: `${cpuThreads / 2}`,
+            }
+            // console.log(stats)
+            ws.send(JSON.stringify({ 'stats': stats }))
+            // return stats
+        })
+    },1000)
+}
 
 export const getModels = async () => {
     const execAsync =  promisify(exec)

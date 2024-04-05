@@ -39,11 +39,6 @@ app.post('/api/llm', async (req, res) => {
     // }
  
     return res.json({ alpaca: 'shit is working' })
-   
-})
-
-app.get('/api/stats', async (req, res) => {
-    res.json(await getStats())
 })
 
 app.get('/api/models', async (req, res) => {
@@ -65,6 +60,11 @@ wss.on('connection', async(ws) => {
     console.log('WSS connected.')
     
     ws.on('message', async (msg) => {
-        wssCallLLM(ws, msg)
+        let MSG = msg.toString()
+        if(MSG === "STATS") {
+            getStats(ws)
+        }else {
+            wssCallLLM(ws, MSG)
+        }
     });
 })
