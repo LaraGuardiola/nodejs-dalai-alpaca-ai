@@ -2,7 +2,7 @@ import express from "express"
 import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
-import { wssCallLLM } from './localLLM.js'
+import { wssCallLLM, cleanLLMContext } from './localLLM.js'
 import { exportToJson, getStats, getModels } from './utils.js'
 
 const app = express()
@@ -43,6 +43,11 @@ app.post('/api/llm', async (req, res) => {
 
 app.get('/api/models', async (req, res) => {
     res.json(await getModels())
+})
+
+app.post('/api/context', async (req, res) => {
+    cleanLLMContext()
+    res.json([])
 })
 
 app.post('/api/json', async (req, res) => {

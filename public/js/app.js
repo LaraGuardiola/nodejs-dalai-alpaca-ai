@@ -124,10 +124,10 @@ const getAlpacaJson = async () => {
 const callLLM = async () => {
     displayDots()
     try {
-        const response = await fetch(`${ALPACA_URL}/api/llm`,{
+        await fetch(`${ALPACA_URL}/api/llm`,{
             method: "POST"
         })
-        const { alpaca } = await response.json()
+        // const { alpaca } = await response.json()
         // let sound = new Audio('/tts/speech2.wav')
         // sound.play()
         createChatbox()
@@ -135,6 +135,16 @@ const callLLM = async () => {
         console.error(error)
     }
     // displayPlane()
+}
+
+const cleanLLMContext = async () => {
+    try {
+        await fetch(`${ALPACA_URL}/api/context`, {
+            method: "POST"
+        })
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 // UTILS
@@ -222,9 +232,10 @@ const hasChatOverflow = () => {
     }
 }
 
-const cleanChat = () => {
+const cleanChat = async () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
     chatBoxes.forEach( chat => upperChat.removeChild(chat))
+    await cleanLLMContext()
     showNotification(notifications.clean)
 }
 
