@@ -11,6 +11,10 @@
     src: url("../assets/webfonts/Montserrat-VariableFont_wght.ttf");
 }
 
+i {
+    user-select: none;
+}
+
 ul, li {
     list-style: none;
 }
@@ -177,13 +181,14 @@ h4 {
     line-height: 150%;
     user-select: text;
     word-break: break-word;
-    /* thanks god for pre-line, text comes already formatted so I don't have to hack my way */
-    white-space: pre-line;
+    /* thanks god for pre-wrap, text comes already formatted so I don't have to hack my way */
+    white-space: pre-wrap;
 }
 
 .upper-chat {
     height: 100%;
     overflow-y: auto;
+    scrollbar-color: #05D962 #282C34;
 }
 
 .lower-chat{
@@ -209,7 +214,6 @@ h4 {
 
 #input-chat {
     display: flex;
-    align-items: center;
     justify-content: flex-start;
     color: white;
     min-height: 58px;
@@ -228,6 +232,7 @@ h4 {
     overflow-y: auto;
     border-radius: 5px;
     border: 1px solid #444654;
+    white-space: pre-wrap;
     /* text-align: center; */
 }
 
@@ -237,17 +242,11 @@ h4 {
     border-color: #05D962;
 }
 
-#input-chat::placeholder {
-    text-align: left;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 #input-chat::-webkit-scrollbar {
   display: none;
 }
-/* typing animation */
+
+ /* typing animation */
 
 .dot {
     display: none;

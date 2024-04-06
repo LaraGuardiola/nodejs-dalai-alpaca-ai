@@ -1,5 +1,5 @@
 import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js';
-        
+
 let input = document.querySelector('#input-chat')
 let upperChat = document.querySelector('.upper-chat')
 let modelInput = document.querySelector('#model')
@@ -35,20 +35,20 @@ socket.addEventListener('message', (event) => {
     // console.log(event.data);
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
 
-    if(event.data.includes(`{"stats":`)) {
+    if (event.data.includes(`{"stats":`)) {
         let { stats } = JSON.parse(event.data)
         refreshStats(stats)
         return
     }
-    if(event.data !== "{done: true}") {
+    if (event.data !== "{done: true}") {
         formatLLMResponse(event.data, alpacaConvo)
-    }else {
+    } else {
         // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
         formatAfterResponse()
         displayPlane()
-        textToTTS(alpacaConvo.innerText)
+        // textToTTS(alpacaConvo.innerText)
     }
-    
+
     hasChatOverflow()
 })
 
@@ -56,9 +56,9 @@ socket.addEventListener('message', (event) => {
 
 const send = async (event) => {
     console.log(input.textContent)
-    if(input.textContent){
+    if (input.textContent) {
         event.preventDefault()
-        createChatbox(input.innerHTML.replaceAll('<br>','\n'), false)
+        createChatbox(input.innerHTML.replaceAll('<br>', '\n'), false)
         let modelOption = document.querySelector('option:checked').value
         let messageContext = JSON.stringify([input.textContent, modelOption])
         socket.send(messageContext)
@@ -68,10 +68,10 @@ const send = async (event) => {
 }
 
 const sendByEnter = async (event) => {
-    if(event.key === 'Enter' && event.shiftKey){
+    if (event.key === 'Enter' && event.shiftKey) {
         return
     }
-    if(event.key === 'Enter'){
+    if (event.key === 'Enter') {
         send(event)
     }
 }
@@ -79,9 +79,9 @@ const sendByEnter = async (event) => {
 // REQUESTS
 
 const getStats = async () => {
-    try{
+    try {
         socket.send("STATS")
-    }catch(e){
+    } catch (e) {
         console.error(e)
     }
 }
@@ -94,7 +94,7 @@ const getModelList = async () => {
         })
 
         const models = await response.json()
-        
+
         models.forEach(model => {
             let option = document.createElement('option')
             option.setAttribute('value', model)
@@ -109,12 +109,12 @@ const getModelList = async () => {
 
 const getAlpacaJson = async () => {
     let convo = getConvo()
-    if(convo.length === 0) return showNotification(notifications.chat_is_empty)
+    if (convo.length === 0) return showNotification(notifications.chat_is_empty)
     const response = await fetch(`${ALPACA_URL}/api/json`, {
         method: "POST",
         body: JSON.stringify(convo),
         headers: {
-          "Content-Type": "application/json"
+            "Content-Type": "application/json"
         }
     })
     const json = await response.json()
@@ -125,7 +125,7 @@ const getAlpacaJson = async () => {
 const callLLM = async () => {
     displayDots()
     try {
-        await fetch(`${ALPACA_URL}/api/llm`,{
+        await fetch(`${ALPACA_URL}/api/llm`, {
             method: "POST"
         })
         // const { alpaca } = await response.json()
@@ -142,17 +142,16 @@ const textToTTS = async (msg) => {
     console.log(msg)
     const oneLineMsg = msg.split("\n").join(' ')
     try {
-        const response = await fetch(`${ALPACA_URL}/api/tts`,{
+        const response = await fetch(`${ALPACA_URL}/api/tts`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({msg: oneLineMsg})
+            body: JSON.stringify({ msg: oneLineMsg })
         })
         const { alpaca } = await response.json()
         let sound = new Audio('./tts/speech2.wav')
-        sound.play()
-        // createChatbox()
+        // sound.play()
     } catch (error) {
         console.error(error)
     }
@@ -172,6 +171,22 @@ const cleanLLMContext = async () => {
 
 const cleanInputChat = () => input.innerHTML = ''
 
+const manageInputChatPasteEvent = (e) => {
+    // Prevent default paste behavior
+    e.preventDefault();
+
+    // Get plain text from clipboard
+    let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+
+    console.log(text);
+
+    // Sanitize input by replacing angle brackets with their escaped counterparts
+    text = text.replace('>', '&gt;').replace('<', '&lt;');
+
+    // Insert the sanitized plain text into the contenteditable div using innerHTML
+    input.innerHTML = text;
+}
+
 const displayDots = () => {
     plane.style.display = "none"
     input.removeAttribute('contenteditable')
@@ -182,7 +197,7 @@ const displayDots = () => {
 const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
-    input.setAttribute('contenteditable','true')
+    input.setAttribute('contenteditable', 'true')
     input.focus()
 }
 
@@ -204,7 +219,7 @@ const getConvo = () => {
         })
     })
 
-    for(let [key] in convo){
+    for (let [key] in convo) {
         convo[key].alpaca = alpacaConvo[key].textContent
     }
     return convo
@@ -213,7 +228,7 @@ const getConvo = () => {
 // LAYOUT
 
 const createChatbox = (msg = '', isAlpaca = true) => {
-    if(isAlpaca) input.disabled = true
+    if (isAlpaca) input.disabled = true
     let img = document.createElement("div")
     let div = document.createElement("div")
     img.classList.add("mini-logo")
@@ -221,21 +236,21 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     upperChat.append(div)
     div.classList.add("chat-box")
 
-    if(isAlpaca) {
+    if (isAlpaca) {
         div.style.backgroundColor = "#444654"
         div.classList.add('alpaca-convo')
     }
-    if(!isAlpaca){
+    if (!isAlpaca) {
         img.style.backgroundImage = "url(\"./assets/img/snoop.jpeg\")"
         div.classList.add('user-convo')
-    } 
+    }
 
     let p = document.createElement('p')
-    
+
     div.append(img)
     div.append(p)
 
-    p.textContent = msg
+    p.innerHTML = msg
 }
 
 const hasChatOverflow = () => {
@@ -245,7 +260,7 @@ const hasChatOverflow = () => {
         totalChatHeight += chat.offsetHeight
     })
 
-    if(totalChatHeight > upperChat.offsetHeight) {
+    if (totalChatHeight > upperChat.offsetHeight) {
         upperChat.scrollTo({
             top: upperChat.scrollHeight,
             behavior: 'instant'
@@ -255,13 +270,14 @@ const hasChatOverflow = () => {
 
 const cleanChat = async () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
-    chatBoxes.forEach( chat => upperChat.removeChild(chat))
+    chatBoxes.forEach(chat => upperChat.removeChild(chat))
     await cleanLLMContext()
     showNotification(notifications.clean)
 }
 
 const onClipboardClick = async (codeSnippet) => {
     console.log('at least this shit is working')
+    // alert("BRO")
     await navigator.clipboard.writeText(codeSnippet)
     showNotification(notifications.clipboard)
 }
@@ -278,14 +294,16 @@ const showNotification = (msg) => {
 
 const formatLLMResponse = (msg, alpacaConvo) => {
     // converts special characters so it doesn't break HTML snippets
-    msg = formatHTMLSnippetSpecialCharacter(msg)
+    // IMPORTANT: changed something related to innerHTML of the upper chat and now it's useless
+    // msg = formatHTMLSnippetSpecialCharacter(msg)
     //checks if the innerHTML of the response includes ``` in order to envelop it with <pre><code>
     formatCodeSnippets(alpacaConvo)
     alpacaConvo.innerHTML += msg
 }
 
+// not necessary anymore?
 const formatHTMLSnippetSpecialCharacter = (msg) => {
-    if(msg.includes('<')) {
+    if (msg.includes('<')) {
         let arr = msg.split('')
         let idx = arr.indexOf('<')
         arr[idx] = '&lt;'
@@ -303,28 +321,29 @@ const formatCodeSnippets = (alpacaConvo) => {
 }
 
 const formatAfterResponse = () => {
-    let LLMResponse = [...document.querySelectorAll('.alpaca-convo' )].at(-1)
+    let LLMResponse = [...document.querySelectorAll('.alpaca-convo')].at(-1)
     let LLMResponseP = LLMResponse.querySelector('p')
     let code = [...LLMResponseP.querySelectorAll('pre code')]
     let codeHeaders = [...LLMResponseP.querySelectorAll('.snippet-header')]
     let lang //for the future
 
-    code.forEach((snippet, index) => {
+    code.forEach(async (snippet, index) => {
         let lines = snippet?.innerHTML.split('\n')
         lang = lines.shift()
         snippet.innerHTML = lines.join('\n')
         codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
         //binding to the clipboard onClipboardClick
-        let clipboards = [...LLMResponseP.querySelectorAll('div .fa-copy')]
+        let clipboards = [...LLMResponseP.querySelectorAll('.snippet-header .fa-copy')]
         clipboards[index].addEventListener('click', async () => {
+            // showNotification(notifications.clipboard)
             await onClipboardClick(snippet.innerText)
         })
+        // clipboards[index].addEventListener('click',await onClipboardClick(snippet.innerText))
         console.log(lines)
     })
     //Some LLMs comes with this stuff on their template
-    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;','')
-    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;','')
-    
+    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;', '')
+    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;', '')
 }
 
 // EVENTS - lifecycle
@@ -338,3 +357,4 @@ document.body.addEventListener('keypress', sendByEnter)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
+input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
