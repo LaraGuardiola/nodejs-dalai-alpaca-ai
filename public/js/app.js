@@ -22,36 +22,6 @@ const notifications = {
     chat_is_empty: "The chat is empty"
 }
 
-// WSS
-
-const socket = new WebSocket((`ws://localhost:3000`))
-
-socket.addEventListener('open', async () => {
-    await getStats()
-    console.log('WebSocket connection established')
-})
-
-socket.addEventListener('message', (event) => {
-    // console.log(event.data);
-    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
-
-    if (event.data.includes(`{"stats":`)) {
-        let { stats } = JSON.parse(event.data)
-        refreshStats(stats)
-        return
-    }
-    if (event.data !== "{done: true}") {
-        formatLLMResponse(event.data, alpacaConvo)
-    } else {
-        // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
-        formatAfterResponse()
-        displayPlane()
-        // textToTTS(alpacaConvo.innerText)
-    }
-
-    hasChatOverflow()
-})
-
 //MAIN FUNCTIONS
 
 const send = async (event) => {
@@ -277,7 +247,6 @@ const cleanChat = async () => {
 
 const onClipboardClick = async (codeSnippet) => {
     console.log('at least this shit is working')
-    // alert("BRO")
     await navigator.clipboard.writeText(codeSnippet)
     showNotification(notifications.clipboard)
 }
@@ -332,17 +301,16 @@ const formatAfterResponse = () => {
         snippet.innerHTML = lines.join('\n')
         codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
         //binding to the clipboard onClipboardClick
-        let clipboards = [...LLMResponseP.querySelectorAll('.snippet-header .fa-copy')]
+        let clipboards = [...LLMResponseP.querySelectorAll('div .fa-copy')]
         clipboards[index].addEventListener('click', async () => {
             // showNotification(notifications.clipboard)
             await onClipboardClick(snippet.innerText)
         })
-        // clipboards[index].addEventListener('click',await onClipboardClick(snippet.innerText))
-        console.log(lines)
+        // console.log(lines)
     })
-    //Some LLMs comes with this stuff on their template
-    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;', '')
-    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;', '')
+    //Some LLMs comes with this stuff on their template - IMPORTANT: this mofo avoided the click binding in the clipboards - with a good modelfile there's no need to leave, but I won't remove just in case
+    // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;', '')
+    // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;', '')
 }
 
 // EVENTS - lifecycle
@@ -357,3 +325,33 @@ plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
 input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
+
+// WSS
+
+const socket = new WebSocket((`ws://localhost:3000`))
+
+socket.addEventListener('open', async () => {
+    await getStats()
+    console.log('WebSocket connection established')
+})
+
+socket.addEventListener('message', (event) => {
+    // console.log(event.data);
+    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
+
+    if (event.data.includes(`{"stats":`)) {
+        let { stats } = JSON.parse(event.data)
+        refreshStats(stats)
+        return
+    }
+    if (event.data !== "{done: true}") {
+        formatLLMResponse(event.data, alpacaConvo)
+    } else {
+        // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
+        formatAfterResponse()
+        displayPlane()
+        // textToTTS(alpacaConvo.innerText)
+    }
+
+    hasChatOverflow()
+})
