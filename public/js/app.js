@@ -46,6 +46,7 @@ socket.addEventListener('message', (event) => {
         // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
         formatAfterResponse()
         displayPlane()
+        textToTTS(alpacaConvo.innerText)
     }
     
     hasChatOverflow()
@@ -135,6 +136,26 @@ const callLLM = async () => {
         console.error(error)
     }
     // displayPlane()
+}
+
+const textToTTS = async (msg) => {
+    console.log(msg)
+    const oneLineMsg = msg.split("\n").join(' ')
+    try {
+        const response = await fetch(`${ALPACA_URL}/api/tts`,{
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({msg: oneLineMsg})
+        })
+        const { alpaca } = await response.json()
+        let sound = new Audio('./tts/speech2.wav')
+        sound.play()
+        // createChatbox()
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const cleanLLMContext = async () => {
@@ -300,6 +321,10 @@ const formatAfterResponse = () => {
         })
         console.log(lines)
     })
+    //Some LLMs comes with this stuff on their template
+    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;','')
+    LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;','')
+    
 }
 
 // EVENTS - lifecycle

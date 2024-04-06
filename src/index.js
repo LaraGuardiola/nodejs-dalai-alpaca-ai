@@ -3,7 +3,7 @@ import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
 import { wssCallLLM, cleanLLMContext } from './localLLM.js'
-import { exportToJson, getStats, getModels } from './utils.js'
+import { exportToJson, getStats, getModels, TTS } from './utils.js'
 
 const app = express()
 
@@ -21,23 +21,6 @@ server.listen(PORT, () => {
 })
 
 app.post('/api/llm', async (req, res) => {
-    // const response = await callLLM(req.body)
-    
-    // const ttsCommand = `tts --text "${response}" --out_path ./public/tts/speech2.wav`
-
-    // try {
-    //     const { stdout, stderr } = await execAsync(ttsCommand)
-
-    //     if (stderr) {
-    //         console.error(`Error al obtener información: ${stderr}`)
-    //     }
-
-    //     console.log(stdout)
-
-    // } catch (error) {
-    //     console.log(error)
-    // }
- 
     return res.json({ alpaca: 'shit is working' })
 })
 
@@ -56,6 +39,16 @@ app.post('/api/json', async (req, res) => {
         return res.json(req.body)
     } catch (error) {
         console.log(error)
+    }
+})
+
+app.post('/api/tts', async (req, res) => {
+    const { msg } = req.body
+    try{
+        await TTS(msg)
+        res.json({ alpaca: 'Successfully converted text to speech' })
+    }catch (error) {
+        res.status(500).json({ alpaca: 'Something went wrong. Check if you have Bark AI installed' })
     }
 })
 

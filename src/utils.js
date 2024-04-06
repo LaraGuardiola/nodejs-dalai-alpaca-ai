@@ -5,6 +5,8 @@ import { exec } from "child_process"
 import { promisify } from "util"
 import { cpuUsage } from 'os-utils';
 
+const execAsync =  promisify(exec)
+
 export const exportToJson = async (queries) => {
     await fs.writeFile('alpaca-queries.json', JSON.stringify(queries), (error) => {
         if (error) throw error
@@ -41,7 +43,6 @@ export const getStats = async (ws) => {
 }
 
 export const getModels = async () => {
-    const execAsync =  promisify(exec)
     let models = []
     const ollamaModelListCommand = `ollama list`
 
@@ -61,5 +62,26 @@ export const getModels = async () => {
         return models
     } catch (error) {
         console.log(error)
+    }
+}
+
+export const TTS = async (response) => {
+    // const response = await callLLM(req.body)
+    
+    const ttsCommand = `tts --text "${response}" --out_path ./public/tts/speech2.wav`
+
+    try {
+        const { stdout, stderr } = await execAsync(ttsCommand)
+
+        if (stderr) {
+            console.error(`Error al obtener información: ${stderr}`)
+        }
+
+        console.log(stdout)
+        return true
+
+    } catch (error) {
+        console.log(error)
+        return false
     }
 }
