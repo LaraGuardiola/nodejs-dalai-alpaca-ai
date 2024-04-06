@@ -245,7 +245,7 @@ const cleanChat = async () => {
     showNotification(notifications.clean)
 }
 
-const onClipboardClick = async (codeSnippet) => {
+const onSnippetClipboardClick = async (codeSnippet) => {
     console.log('at least this shit is working')
     await navigator.clipboard.writeText(codeSnippet)
     showNotification(notifications.clipboard)
@@ -288,30 +288,39 @@ const formatCodeSnippets = (alpacaConvo) => {
     hljs.highlightAll()
 }
 
+const createSnippetHeaders = (codeHeaders, snippet, index) => {
+    let lang
+    let lines = snippet?.innerHTML.split('\n')
+    lang = lines.shift()
+    snippet.innerHTML = lines.join('\n')
+    codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
+}
+
+const bindClickSnippetHeaders = (response, snippet, index) => {
+    //binding to the clipboard onSnippetClipboardClick
+    let clipboards = [...response.querySelectorAll('div .fa-copy')]
+    clipboards[index].addEventListener('click', async () => {
+        // showNotification(notifications.clipboard)
+        await onSnippetClipboardClick(snippet.innerText)
+    })
+}
+
 const formatAfterResponse = () => {
     let LLMResponse = [...document.querySelectorAll('.alpaca-convo')].at(-1)
     let LLMResponseP = LLMResponse.querySelector('p')
     let code = [...LLMResponseP.querySelectorAll('pre code')]
     let codeHeaders = [...LLMResponseP.querySelectorAll('.snippet-header')]
-    let lang //for the future
 
     code.forEach(async (snippet, index) => {
-        let lines = snippet?.innerHTML.split('\n')
-        lang = lines.shift()
-        snippet.innerHTML = lines.join('\n')
-        codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
-        //binding to the clipboard onClipboardClick
-        let clipboards = [...LLMResponseP.querySelectorAll('div .fa-copy')]
-        clipboards[index].addEventListener('click', async () => {
-            // showNotification(notifications.clipboard)
-            await onClipboardClick(snippet.innerText)
-        })
+        createSnippetHeaders(codeHeaders, snippet, index)
+        bindClickSnippetHeaders(LLMResponseP, snippet, index)
         // console.log(lines)
     })
     //Some LLMs comes with this stuff on their template - IMPORTANT: this mofo avoided the click binding in the clipboards - with a good modelfile there's no need to leave, but I won't remove just in case
     // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;', '')
     // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;', '')
 }
+
 
 // EVENTS - lifecycle
 
