@@ -181,10 +181,10 @@ const manageInputChatPasteEvent = (e) => {
     console.log(text);
 
     // Sanitize input by replacing angle brackets with their escaped counterparts
-    text = text.replace('>', '&gt;').replace('<', '&lt;');
+    text = text.replace(/&gt;/g, '>').replace(/&lt;/g, '<');
 
     // Insert the sanitized plain text into the contenteditable div using innerHTML
-    input.innerHTML = text;
+    input.innerText = input.innerText + text;
 }
 
 const displayDots = () => {
@@ -295,13 +295,12 @@ const showNotification = (msg) => {
 const formatLLMResponse = (msg, alpacaConvo) => {
     // converts special characters so it doesn't break HTML snippets
     // IMPORTANT: changed something related to innerHTML of the upper chat and now it's useless
-    // msg = formatHTMLSnippetSpecialCharacter(msg)
+    msg = formatHTMLSnippetSpecialCharacter(msg)
     //checks if the innerHTML of the response includes ``` in order to envelop it with <pre><code>
     formatCodeSnippets(alpacaConvo)
     alpacaConvo.innerHTML += msg
 }
 
-// not necessary anymore?
 const formatHTMLSnippetSpecialCharacter = (msg) => {
     if (msg.includes('<')) {
         let arr = msg.split('')
