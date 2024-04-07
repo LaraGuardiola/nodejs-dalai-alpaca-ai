@@ -65,16 +65,15 @@ export const getModels = async () => {
     }
 }
 
+//unused - not happy with the result. Sometimes is extremely creepy
 export const TTS = async (response) => {
-    // const response = await callLLM(req.body)
-    
     const ttsCommand = `tts --text "${response}" --out_path ./public/tts/speech2.wav`
 
     try {
         const { stdout, stderr } = await execAsync(ttsCommand)
 
         if (stderr) {
-            console.error(`Error al obtener información: ${stderr}`)
+            console.error(`Something went wrong: ${stderr}`)
         }
 
         console.log(stdout)

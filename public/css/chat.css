@@ -33,10 +33,6 @@ textarea {
     padding-left: 10px;
 }
 
-#input-chat:disabled {
-    cursor: not-allowed;
-}
-
 span {
     color: #05D962;
 }
@@ -54,6 +50,10 @@ li {
     line-height: 150%;
 }
 
+.montserrat {
+    font-family: Montserrat;
+}
+
 .mainspace {
     display: flex;
     flex-direction: row;
@@ -69,12 +69,19 @@ li {
     background-color: #202123;
     color: white;
     width: 15%;
-    min-width: 300px;
+    min-width: 330px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     align-items: center;
     user-select: none;
+}
+
+.burger-menu {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    color:#05D962;
 }
 
 .logo {
@@ -164,7 +171,7 @@ h4 {
     flex-direction: column;
     background-color: #444654;
     color: white;
-    width: 85%;
+    width: 100%;
     justify-content: flex-start;
 }
 
@@ -172,8 +179,6 @@ h4 {
     display: flex;
     background-color: #343541; 
     padding: 2em;
-    padding-right: 10em;
-    padding-left: 10em;
     width: 100%;
 }
 
@@ -219,7 +224,7 @@ h4 {
     min-height: 58px;
     height: auto;
     max-height: 200px;
-    width: 660px;
+    width: 60%;
     background-color: #444654;
     resize: none;
     padding: 1em;
@@ -305,8 +310,7 @@ i:hover {
 /* options menu */
 
 .options-menu {
-    /* position: relative;
-    left: 30em; */
+    display: flex;
 }
 
 .options {

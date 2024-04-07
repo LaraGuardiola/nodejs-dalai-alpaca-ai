@@ -1,7 +1,10 @@
-import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js';
+import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js' // from cdn works, locally I'm missing something
 
+let mainspace = document.querySelector('.mainspace')
+let sideMenu = document.querySelector('.side-menu')
+let burgerMenu = document.querySelector('.burger-menu')
 let input = document.querySelector('#input-chat')
-let upperChat = document.querySelector('.upper-chat')
+let upperChat = document.querySelector('.upper-chat') 
 let modelInput = document.querySelector('#model')
 let pcModel = document.querySelector('#pc-model')
 let threadsCores = document.querySelector('#threads-cores')
@@ -15,6 +18,8 @@ let optClean = document.querySelector('#option-clean')
 let notification = document.querySelector('.notification')
 
 const ALPACA_URL = "http://localhost:3000"
+const viewportWidth = window.screen.width
+
 const notifications = {
     clipboard: "Snippet has been copied to clipboard",
     json: "Successfully created json on the repository",
@@ -69,6 +74,7 @@ const getModelList = async () => {
             let option = document.createElement('option')
             option.setAttribute('value', model)
             option.innerText = model
+            option.classList.add('montserrat')
             modelInput.appendChild(option)
         })
         console.log(models)
@@ -98,16 +104,13 @@ const callLLM = async () => {
         await fetch(`${ALPACA_URL}/api/llm`, {
             method: "POST"
         })
-        // const { alpaca } = await response.json()
-        // let sound = new Audio('/tts/speech2.wav')
-        // sound.play()
         createChatbox()
     } catch (error) {
         console.error(error)
     }
-    // displayPlane()
 }
 
+//unused, not happy with the result
 const textToTTS = async (msg) => {
     console.log(msg)
     const oneLineMsg = msg.split("\n").join(' ')
@@ -121,7 +124,7 @@ const textToTTS = async (msg) => {
         })
         const { alpaca } = await response.json()
         let sound = new Audio('./tts/speech2.wav')
-        // sound.play()
+        sound.play()
     } catch (error) {
         console.error(error)
     }
@@ -141,20 +144,19 @@ const cleanLLMContext = async () => {
 
 const cleanInputChat = () => input.innerHTML = ''
 
+//this lovely snippet comes straight from code from deepseek-coder:33b, does the infernal job of formatting the main input when pasting
 const manageInputChatPasteEvent = (e) => {
     // Prevent default paste behavior
-    e.preventDefault();
+    e.preventDefault()
 
     // Get plain text from clipboard
-    let text = (e.originalEvent || e).clipboardData.getData('text/plain');
-
-    console.log(text);
+    let text = (e.originalEvent || e).clipboardData.getData('text/plain')
 
     // Sanitize input by replacing angle brackets with their escaped counterparts
-    text = text.replace(/&gt;/g, '>').replace(/&lt;/g, '<');
+    text = text.replace(/&gt;/g, '>').replace(/&lt;/g, '<')
 
     // Insert the sanitized plain text into the contenteditable div using innerHTML
-    input.innerText = input.innerText + text;
+    input.innerText = input.innerText + text
 }
 
 const displayDots = () => {
@@ -220,6 +222,14 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     div.append(img)
     div.append(p)
 
+    //Sets a different padding for the chat boxes based on the window.screen.width
+    let chatBoxes = document.querySelectorAll('.chat-box')
+    if (mainspace.offsetWidth <= viewportWidth / 2) {
+        resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
+    }else {
+        resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
+    }
+
     p.innerHTML = msg
 }
 
@@ -259,11 +269,44 @@ const showNotification = (msg) => {
     }, 3000)
 }
 
+const hideSidebar = () => sideMenu.style.display = "none"
+const showSidebar = () => sideMenu.style.display = "flex"
+
+const showX = () => burgerMenu.innerHTML = `<i class="fa-solid fa-x"></i>`
+const showBurger = () => burgerMenu.innerHTML = `<i class="fa-solid fa-bars"></i>`
+
+const resizeChatboxPadding = (chatBoxes, padding) => {
+    if(chatBoxes.length > 0) chatBoxes.forEach(chatbox => chatbox.style.padding = padding)
+}
+
+const handleSidebar = () => {
+    if(burgerMenu.firstChild.className.includes("fa-x")) {
+        hideSidebar()
+        showBurger()
+    }else {
+        showSidebar()
+        showX()
+    }
+}
+
+const resizeLayout = () => {
+    let chatBoxes = document.querySelectorAll('.chat-box')
+    const pageWidth = mainspace.offsetWidth
+    if (pageWidth <= viewportWidth / 2) {
+        hideSidebar()
+        resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
+        showBurger()
+    } else {
+        showSidebar()
+        resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
+        showX()
+    }
+}
+
 // FORMATS
 
 const formatLLMResponse = (msg, alpacaConvo) => {
     // converts special characters so it doesn't break HTML snippets
-    // IMPORTANT: changed something related to innerHTML of the upper chat and now it's useless
     msg = formatHTMLSnippetSpecialCharacter(msg)
     //checks if the innerHTML of the response includes ``` in order to envelop it with <pre><code>
     formatCodeSnippets(alpacaConvo)
@@ -329,7 +372,9 @@ const init = async () => {
 }
 
 window.addEventListener('DOMContentLoaded', init)
+window.addEventListener('resize', resizeLayout)
 document.body.addEventListener('keypress', sendByEnter)
+burgerMenu.addEventListener('click', handleSidebar)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
@@ -345,7 +390,6 @@ socket.addEventListener('open', async () => {
 })
 
 socket.addEventListener('message', (event) => {
-    // console.log(event.data);
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
 
     if (event.data.includes(`{"stats":`)) {
@@ -356,7 +400,6 @@ socket.addEventListener('message', (event) => {
     if (event.data !== "{done: true}") {
         formatLLMResponse(event.data, alpacaConvo)
     } else {
-        // Could not thought a better way, however with 7B LLM is not noticeable ¯\_(ツ)_/¯ -upd: I could add it to formatCodeSnippets(), but less work to do for the browser
         formatAfterResponse()
         displayPlane()
         // textToTTS(alpacaConvo.innerText)

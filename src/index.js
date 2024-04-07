@@ -20,15 +20,15 @@ server.listen(PORT, () => {
   console.log(`Servidor iniciado en http://localhost:${PORT}`)
 })
 
-app.post('/api/llm', async (req, res) => {
+app.post('/api/llm', async (_, res) => {
     return res.json({ alpaca: 'shit is working' })
 })
 
-app.get('/api/models', async (req, res) => {
+app.get('/api/models', async (_, res) => {
     res.json(await getModels())
 })
 
-app.post('/api/context', async (req, res) => {
+app.post('/api/context', async (_, res) => {
     cleanLLMContext()
     res.json([])
 })
