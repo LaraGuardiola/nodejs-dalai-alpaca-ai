@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
+    "start:local": "node src/index.js --host 192.168.1.39",
     "dev": "node --watch src/index.js "
   },
   "keywords": [],

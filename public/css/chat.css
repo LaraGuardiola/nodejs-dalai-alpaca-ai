@@ -58,7 +58,7 @@ li {
     display: flex;
     flex-direction: row;
     width: 100dvw;
-    height: 100vh;
+    height: 100dvh;
     font-family: Montserrat;
 }
 
@@ -70,7 +70,7 @@ li {
     color: white;
     width: 15%;
     min-width: 330px;
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 1rem;
     align-items: center;
@@ -224,7 +224,7 @@ h4 {
     min-height: 58px;
     height: auto;
     max-height: 200px;
-    width: 60%;
+    width: 70%;
     background-color: #444654;
     resize: none;
     padding: 1em;
@@ -309,6 +309,15 @@ i:hover {
 
 /* options menu */
 
+.side-menu-input {
+    background-color: #202123;
+    color: white;
+}
+
+option:checked {
+    background-color: #05D962;
+}   
+
 .options-menu {
     display: flex;
 }
@@ -344,6 +353,7 @@ code {
     transform: translateX(-50%);
     background-color: #202123;
     z-index: 9;
+    width: max-content;
     /* animation: fadeAndMove 1s ease-in-out; */
 }
 
@@ -374,5 +384,15 @@ code {
     100% {
         opacity: 0;
         top: 0;
+    }
+}
+
+
+@media (orientation: portrait) {
+    .chat-box {
+        padding: 2em 1em 2em 1em !important;
+    }
+    .mini-logo {
+        display: none !important;
     }
 }

@@ -1,16 +1,36 @@
-import fs from 'fs/promises';
+import fs from 'fs/promises'
 import os from 'os'
 import osu from 'node-os-utils'
 import { exec } from "child_process"
 import { promisify } from "util"
-import { cpuUsage } from 'os-utils';
+import { cpuUsage } from 'os-utils'
 
 const execAsync =  promisify(exec)
 
 export const exportToJson = async (queries) => {
-    await fs.writeFile('alpaca-queries.json', JSON.stringify(queries), (error) => {
+    
+    let date = getDate()
+    console.log(date)
+    await fs.writeFile(`./record/${date}.json`, JSON.stringify(queries), (error) => {
         if (error) throw error
     })
+}
+
+const getDate = () => {
+    let now = new Date()  // Get the current date and time
+
+    // Get day, month and year in separate variables
+    let day = String(now.getDate()).padStart(2, '0')
+    let month = String(now.getMonth() + 1).padStart(2, '0') // Note: getMonth() is zero-based
+    let year = now.getFullYear()
+    
+    // Get hour and minute in separate variables
+    let hours = String(now.getHours()).padStart(2, '0')
+    let minutes = String(now.getMinutes()).padStart(2, '0')
+    
+    // Combine the parts into a single string
+    let dateTimeString = `${day}-${month}-${year} - ${hours}-${minutes}`
+    return dateTimeString
 }
 
 export const getStats = async (ws) => {

@@ -1,6 +1,7 @@
 import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js' // from cdn works, locally I'm missing something
 
 let mainspace = document.querySelector('.mainspace')
+let chat = document.querySelector('.chat')
 let sideMenu = document.querySelector('.side-menu')
 let burgerMenu = document.querySelector('.burger-menu')
 let input = document.querySelector('#input-chat')
@@ -17,12 +18,13 @@ let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
 let notification = document.querySelector('.notification')
 
-const ALPACA_URL = "http://localhost:3000"
+// const ALPACA_URL = "http://localhost:3000"
+const ALPACA_URL = "http://192.168.1.41:3000"
 const viewportWidth = window.screen.width
 
 const notifications = {
-    clipboard: "Snippet has been copied to clipboard",
-    json: "Successfully created json on the repository",
+    clipboard: "Snippet has been copied",
+    json: "Created json on the repository",
     clean: "Successfully cleaned the chat",
     chat_is_empty: "The chat is empty"
 }
@@ -257,8 +259,12 @@ const cleanChat = async () => {
 
 const onSnippetClipboardClick = async (codeSnippet) => {
     console.log('at least this shit is working')
-    await navigator.clipboard.writeText(codeSnippet)
-    showNotification(notifications.clipboard)
+    try {
+        await navigator.clipboard.writeText(codeSnippet)
+        showNotification(notifications.clipboard)
+    } catch (error) {
+        showNotification(error)
+    }
 }
 
 const showNotification = (msg) => {
@@ -283,9 +289,19 @@ const handleSidebar = () => {
     if(burgerMenu.firstChild.className.includes("fa-x")) {
         hideSidebar()
         showBurger()
+
+        if(window.screen.orientation.type === "portrait-primary") {
+            chat.style.display = "flex"
+            sideMenu.style.width = "15%"
+        }
     }else {
         showSidebar()
         showX()
+
+        if(window.screen.orientation.type === "portrait-primary") {
+            chat.style.display = "none"
+            sideMenu.style.width = "100%"
+        }
     }
 }
 
@@ -293,13 +309,13 @@ const resizeLayout = () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
     const pageWidth = mainspace.offsetWidth
     if (pageWidth <= viewportWidth / 2) {
-        hideSidebar()
+        // hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
-        showBurger()
+        // showBurger()
     } else {
-        showSidebar()
+        // showSidebar()
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
-        showX()
+        // showX()
     }
 }
 
@@ -382,7 +398,8 @@ input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
 
 // WSS
 
-const socket = new WebSocket((`ws://localhost:3000`))
+// const socket = new WebSocket((`ws://localhost:3000`))
+const socket = new WebSocket((`ws://192.168.1.41:3000`))
 
 socket.addEventListener('open', async () => {
     await getStats()

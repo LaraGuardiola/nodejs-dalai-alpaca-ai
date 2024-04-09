@@ -1,4 +1,5 @@
 /node_modules/
+/record/*.json
 alpaca-queries.json
 environment.js
 *.gguf
