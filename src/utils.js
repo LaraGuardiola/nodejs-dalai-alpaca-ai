@@ -2,10 +2,17 @@ import fs from 'fs/promises'
 import os from 'os'
 import osu from 'node-os-utils'
 import { exec } from "child_process"
+import { spawn } from 'child_process'
 import { promisify } from "util"
 import { cpuUsage } from 'os-utils'
+import requestIp from 'request-ip'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
+//this joke of variable is due to ES6 imports still being a lil shit
+const __dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const execAsync =  promisify(exec)
+let zrokDomain = ''
 
 export const exportToJson = async (queries) => {
     
@@ -103,4 +110,46 @@ export const TTS = async (response) => {
         console.log(error)
         return false
     }
+}
+
+//useless because of the tunnel zrok sets but I wanted to see how it looks
+export const getIp = (req, res, next) => {
+    let clientIp = requestIp.getClientIp(req)
+    console.log(clientIp)
+    next()
+}
+
+export const createZrokPublicDomain = () => {
+    const zrokPath = path.join(__dirname, 'zrok.exe')
+    const zrokProcess = spawn(zrokPath, ['share', 'public', 'http://localhost:3000'], {
+        stdio: 'pipe' // Use pipe to capture output
+    })
+
+    let output = ''
+
+    // Listen for data events on stdout
+    zrokProcess.stdout.on('data', (data) => {
+        output += data.toString() // Append data to output string
+        zrokDomain = extractAndLogUrls(output) // Extract and log URL
+        return zrokDomain
+    })
+
+    zrokProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`)
+    })
+
+    zrokProcess.on('close', (code) => {
+        console.log(`zrok process exited with code ${code}`)
+    })
+}
+
+// Function to extract and log URLs from text
+const extractAndLogUrls = (text) => {
+    const urlRegex = /│(https?:\/\/\S+?)│/g
+    let match
+    while ((match = urlRegex.exec(text)) !== null) {
+        console.log(match[1])
+        zrokDomain = match[1]
+    }
+    return zrokDomain
 }

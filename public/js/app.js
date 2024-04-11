@@ -18,8 +18,7 @@ let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
 let notification = document.querySelector('.notification')
 
-// const ALPACA_URL = "http://localhost:3000"
-const ALPACA_URL = "http://192.168.1.41:3000"
+const ALPACA_URL = window.location.href.slice(0,-1)
 const viewportWidth = window.screen.width
 
 const notifications = {
@@ -398,8 +397,13 @@ input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
 
 // WSS
 
-// const socket = new WebSocket((`ws://localhost:3000`))
-const socket = new WebSocket((`ws://192.168.1.41:3000`))
+let socket
+if(window.location.href.includes('https://')) {
+    socket = new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
+}else {
+    socket = new WebSocket(`ws://${ALPACA_URL.replace('http://', '')}`)
+}
+
 
 socket.addEventListener('open', async () => {
     await getStats()

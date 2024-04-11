@@ -39,7 +39,7 @@ export const wssCallLLM = async (ws, msg) => {
         if(await processResponse()) {
             ws.send('{done: true}')
             LLMContext.push({ role: 'assistant', content: responseStr.toString() })
-            // console.log(LLMContext)
+            console.log(LLMContext)
         }
     } catch (error) {
         console.error(error)

@@ -1,7 +1,7 @@
 /node_modules/
 /record/*.json
 alpaca-queries.json
-environment.js
+*.exe
 *.gguf
 *.wav
 modelfile

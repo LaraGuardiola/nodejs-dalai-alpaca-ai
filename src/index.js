@@ -3,16 +3,25 @@ import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
 import { wssCallLLM, cleanLLMContext } from './localLLM.js'
-import { exportToJson, getStats, getModels, TTS } from './utils.js'
+import { exportToJson, getStats, getModels, TTS, getIp, createZrokPublicDomain } from './utils.js'
+import cors from 'cors'
+
+let env = process.argv[2]
+let domain
+
+if(env === 'zrok') domain = createZrokPublicDomain()
 
 const app = express()
 
+app.use(cors({
+    origin: domain
+}))
+app.use((req, res, next) => getIp(req, res, next))
 app.use(morgan('dev'))
 app.use(express.static('public'))
 app.use(express.json())
 
 const server = http.createServer(app)
-
 const wss = new WebSocketServer({ server })
 
 const PORT = process.env.PORT || 3000
