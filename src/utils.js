@@ -85,7 +85,15 @@ export const getModels = async () => {
         arrModels.splice(0,1)
         arrModels.splice(-1,1)
 
-        models = arrModels.map(model => model.split(' ')[0])
+        models = arrModels
+            .map(model => model.split(' ')[0])
+            .map(model => {
+                console.log(model)
+                if (model.includes(':latest')){
+                    return model.split(':latest')[0]
+                }
+                return model
+            })
         return models
     } catch (error) {
         console.log(error)
@@ -143,7 +151,7 @@ export const createZrokPublicDomain = () => {
     })
 }
 
-// Function to extract and log URLs from text
+// Function to extract and log URL from text
 const extractAndLogUrls = (text) => {
     const urlRegex = /│(https?:\/\/\S+?)│/g
     let match
