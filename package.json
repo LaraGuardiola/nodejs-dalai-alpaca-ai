@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js localhost",
-    "start:local": "node src/index.js local --host 192.168.1.41",
+    "start:local": "node src/index.js local --host 192.168.1.39",
     "start:zrok": "node src/index.js zrok",
     "dev": "node --watch src/index.js "
   },

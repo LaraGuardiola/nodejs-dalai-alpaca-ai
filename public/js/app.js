@@ -325,6 +325,7 @@ const formatLLMResponse = (msg, alpacaConvo) => {
     msg = formatHTMLSnippetSpecialCharacter(msg)
     //checks if the innerHTML of the response includes ``` in order to envelop it with <pre><code>
     formatCodeSnippets(alpacaConvo)
+    formatBoldText(alpacaConvo)
     alpacaConvo.innerHTML += msg
 }
 
@@ -346,12 +347,43 @@ const formatCodeSnippets = (alpacaConvo) => {
     hljs.highlightAll()
 }
 
+const formatBoldText = (alpacaConvo) => {
+    let replacedStr = alpacaConvo.innerHTML.replace(/\*\*(.*?)\*\*/gs, '<b>$1</b>')
+    alpacaConvo.innerHTML = replacedStr
+}
+
+const formatBlackquotes = (alpacaConvo) => {
+    //envelops the snippet inside <pre><code>
+    let replacedStr = alpacaConvo.innerHTML.replace(/`(.*?)`/gs, '<span class="blackquote">$1</span>')
+    alpacaConvo.innerHTML = replacedStr
+}
+
+
 const createSnippetHeaders = (codeHeaders, snippet, index) => {
     let lang
     let lines = snippet?.innerHTML.split('\n')
     lang = lines.shift()
     snippet.innerHTML = lines.join('\n')
     codeHeaders[index].innerHTML = `<p>${lang}</p><i class="fa-solid fa-copy"></i>`
+}
+
+const createHeaderTags = (alpacaConvo) => {
+    let lines =  alpacaConvo.innerHTML.split('\n')
+    lines.forEach((line, i) => {
+        if(line.startsWith('#')) {
+            lines[i] = `<h1 class="tag-header">${line.slice(2)}</h1>`
+        }
+        if(line.startsWith('##')) {
+            lines[i] = `<h2 class="tag-header">${line.slice(3)}</h2>`
+        }
+        if(line.startsWith('###')) {
+            lines[i] = `<h3 class="tag-header">${line.slice(4)}</h3>`
+        }
+        if(line.startsWith('####')) {
+            lines[i] = `<h4>${line.slice(5)}</h4>`
+        }
+    })
+    alpacaConvo.innerHTML = lines.join('\n')
 }
 
 const bindClickSnippetHeaders = (response, snippet, index) => {
@@ -363,7 +395,10 @@ const bindClickSnippetHeaders = (response, snippet, index) => {
     })
 }
 
-const formatAfterResponse = () => {
+const formatAfterResponse = (alpacaConvo) => {
+    formatBlackquotes(alpacaConvo)
+    createHeaderTags(alpacaConvo)
+
     let LLMResponse = [...document.querySelectorAll('.alpaca-convo')].at(-1)
     let LLMResponseP = LLMResponse.querySelector('p')
     let code = [...LLMResponseP.querySelectorAll('pre code')]
@@ -421,7 +456,7 @@ socket.addEventListener('message', (event) => {
     if (event.data !== "{done: true}") {
         formatLLMResponse(event.data, alpacaConvo)
     } else {
-        formatAfterResponse()
+        formatAfterResponse(alpacaConvo)
         displayPlane()
         // textToTTS(alpacaConvo.innerText)
     }

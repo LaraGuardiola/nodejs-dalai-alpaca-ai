@@ -36,15 +36,6 @@ textarea {
 span {
     color: #05D962;
 }
- 
-h3 {
-    align-self: flex-start;
-    border-bottom: 1px solid #05D962;
-    border-right: 1px solid #05D962;
-    color: #05D962;
-    padding: 0.2em 1em 0.2em 0.2em;
-    border-radius: 0 0 5px 0;
-}
 
 li {
     line-height: 150%;
@@ -84,19 +75,13 @@ li {
     color:#05D962;
 }
 
-.logo {
-    background-image: url("../assets/img/pandora-img.jpg");
-    background-size: cover;
-    background-position: center;
+.logo > svg {
     height: 150px;
-    width: 150px;
-    border-radius: 75px;
-    border: 3px solid #05D962;
 }
 
 .mini-logo {
     display: inline-block;
-    background-image: url("../assets/img/pandora-img.jpg");
+    background-image: url("../assets/img/pandora-box-logo.svg");
     background-size: cover;
     background-position: center;
     height: 40px;
@@ -160,10 +145,6 @@ li {
     padding-left: 10px
 }
 
-h4 {
-    color: #05D962;
-}
-
 /* CHAT */
 
 .chat {
@@ -215,6 +196,29 @@ h4 {
     color: #05D962;
     padding: 0.8em;
     border-bottom: 1px solid #05D962;
+}
+
+.blockquote {
+    padding: 0.2em;
+    border-radius: 5px;
+    background-color: grey;
+    color: #05D962;
+    font-family: monospace;
+    font-size: large;
+}
+
+.tag-header {
+    width: fit-content;
+    align-self: flex-start;
+    border-bottom: 1px solid #05D962;
+    border-right: 1px solid #05D962;
+    color: #05D962;
+    padding: 0.2em 1em 0.2em 0.2em;
+    border-radius: 0 0 5px 0;
+}
+
+.green-border > .tag-header {
+    border: none;
 }
 
 #input-chat {
