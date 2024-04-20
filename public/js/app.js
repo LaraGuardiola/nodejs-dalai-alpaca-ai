@@ -35,12 +35,9 @@ const send = async (event) => {
     console.log(input.textContent)
     if (input.textContent) {
         event.preventDefault()
-
-        
-
         createChatbox(input.innerHTML.replaceAll('<br>', '\n'), false)
         let modelOption = document.querySelector('option:checked').value
-        let messageContext = JSON.stringify([input.textContent, modelOption])
+        let messageContext = JSON.stringify([input.textContent, modelOption, getImages()])
         socket.send(messageContext)
         callLLM()
         cleanInputChat()
@@ -57,14 +54,11 @@ const sendByEnter = async (event) => {
 }
 
 const onImgDragover = (e) => {
-    console.log("dragging over this shit")
     e.preventDefault()
 }
 
 const onImgDrop = (e) => {
-    console.log("dropaso")
     e.preventDefault()
-    const file = e.dataTransfer.files[0]
     const files = e.dataTransfer.files
 
     Array.from(files).forEach(file => {
@@ -212,8 +206,8 @@ const refreshStats = (computerStats) => {
 
 const getConvo = () => {
     let convo = []
-    let userConvo = document.querySelectorAll('.user-convo')
-    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo')]
+    let userConvo = document.querySelectorAll('.user-convo .flex-column p')
+    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo .flex-column p')]
     userConvo.forEach(chat => {
         convo.push({
             prompt: chat.textContent
@@ -224,6 +218,16 @@ const getConvo = () => {
         convo[key].alpaca = alpacaConvo[key].textContent
     }
     return convo
+}
+
+const getImages = () => {
+    let lastUserConvo = document.querySelectorAll('.user-convo')
+    let imagesDom =  Array.from(lastUserConvo).at(-1).querySelectorAll('.flex-column img')
+    let images = []
+    imagesDom.forEach(img => {
+        images.push(img.src.split(',')[1])
+    })
+    return images
 }
 
 // LAYOUT
@@ -260,8 +264,6 @@ const createChatbox = (msg = '', isAlpaca = true) => {
             pSection.appendChild(img)
         })
     }
-
-    console.log(attachment.children.length)
 
     //Sets a different padding for the chat boxes based on the window.screen.width
     let chatBoxes = document.querySelectorAll('.chat-box')
@@ -348,9 +350,9 @@ const resizeLayout = () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
     const pageWidth = mainspace.offsetWidth
     if (pageWidth <= viewportWidth / 2) {
-        // hideSidebar()
+        hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
-        // showBurger()
+        showBurger()
     } else {
         // showSidebar()
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
@@ -447,11 +449,7 @@ const formatAfterResponse = (alpacaConvo) => {
     code.forEach(async (snippet, index) => {
         createSnippetHeaders(codeHeaders, snippet, index)
         bindClickSnippetHeaders(LLMResponseP, snippet, index)
-        // console.log(lines)
     })
-    //Some LLMs comes with this stuff on their template - IMPORTANT: this mofo avoided the click binding in the clipboards - with a good modelfile there's no need to leave, but I won't remove just in case
-    // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|im_end|&gt;', '')
-    // LLMResponseP.innerHTML = LLMResponseP.innerHTML.replace('&lt;|end_of_turn|&gt;', '')
 }
 
 
@@ -490,6 +488,10 @@ socket.addEventListener('open', async () => {
 socket.addEventListener('message', (event) => {
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
 
+    if (event.data.includes(`error:`)) {
+        showNotification(event.data.replace('error: ', ''))
+        displayPlane()
+    }
     if (event.data.includes(`{"stats":`)) {
         let { stats } = JSON.parse(event.data)
         refreshStats(stats)

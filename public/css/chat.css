@@ -175,7 +175,8 @@ li {
     display: flex;
     flex-direction: column;
     img {
-        max-width: fit-content;
+        width: 100%;
+        max-width: 1024px;
     }
 }
 
