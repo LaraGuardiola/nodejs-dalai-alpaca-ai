@@ -5,7 +5,7 @@ let chat = document.querySelector('.chat')
 let sideMenu = document.querySelector('.side-menu')
 let burgerMenu = document.querySelector('.burger-menu')
 let input = document.querySelector('#input-chat')
-let upperChat = document.querySelector('.upper-chat') 
+let upperChat = document.querySelector('.upper-chat')
 let modelInput = document.querySelector('#model')
 let pcModel = document.querySelector('#pc-model')
 let threadsCores = document.querySelector('#threads-cores')
@@ -17,8 +17,9 @@ let plane = document.querySelector('.send-icon')
 let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
 let notification = document.querySelector('.notification')
+let attachment = document.querySelector('.attachment')
 
-const ALPACA_URL = window.location.href.slice(0,-1)
+const ALPACA_URL = window.location.href.slice(0, -1)
 const viewportWidth = window.screen.width
 
 const notifications = {
@@ -34,6 +35,9 @@ const send = async (event) => {
     console.log(input.textContent)
     if (input.textContent) {
         event.preventDefault()
+
+        
+
         createChatbox(input.innerHTML.replaceAll('<br>', '\n'), false)
         let modelOption = document.querySelector('option:checked').value
         let messageContext = JSON.stringify([input.textContent, modelOption])
@@ -50,6 +54,30 @@ const sendByEnter = async (event) => {
     if (event.key === 'Enter') {
         send(event)
     }
+}
+
+const onImgDragover = (e) => {
+    console.log("dragging over this shit")
+    e.preventDefault()
+}
+
+const onImgDrop = (e) => {
+    console.log("dropaso")
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    const files = e.dataTransfer.files
+
+    Array.from(files).forEach(file => {
+        if(file.type.startsWith("image/")) {
+            const reader = new FileReader()
+            reader.onloadend = (ev) => {
+                const img = document.createElement('img')
+                img.src = ev.target.result
+                attachment.appendChild(img)
+            }
+            reader.readAsDataURL(file)
+        }
+    })
 }
 
 // REQUESTS
@@ -204,10 +232,12 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     if (isAlpaca) input.disabled = true
     let img = document.createElement("div")
     let div = document.createElement("div")
+    let pSection = document.createElement("section")
     img.classList.add("mini-logo")
     upperChat.append(img)
     upperChat.append(div)
     div.classList.add("chat-box")
+    pSection.classList.add("flex-column")
 
     if (isAlpaca) {
         div.style.backgroundColor = "#444654"
@@ -221,13 +251,23 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     let p = document.createElement('p')
 
     div.append(img)
-    div.append(p)
+    div.append(pSection)
+    pSection.append(p)
+
+    //attach img to chatbox
+    if(attachment.children.length > 0) {
+        Array.from(attachment.children).forEach(img => {
+            pSection.appendChild(img)
+        })
+    }
+
+    console.log(attachment.children.length)
 
     //Sets a different padding for the chat boxes based on the window.screen.width
     let chatBoxes = document.querySelectorAll('.chat-box')
     if (mainspace.offsetWidth <= viewportWidth / 2) {
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
-    }else {
+    } else {
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
     }
 
@@ -281,23 +321,23 @@ const showX = () => burgerMenu.innerHTML = `<i class="fa-solid fa-x"></i>`
 const showBurger = () => burgerMenu.innerHTML = `<i class="fa-solid fa-bars"></i>`
 
 const resizeChatboxPadding = (chatBoxes, padding) => {
-    if(chatBoxes.length > 0) chatBoxes.forEach(chatbox => chatbox.style.padding = padding)
+    if (chatBoxes.length > 0) chatBoxes.forEach(chatbox => chatbox.style.padding = padding)
 }
 
 const handleSidebar = () => {
-    if(burgerMenu.firstChild.className.includes("fa-x")) {
+    if (burgerMenu.firstChild.className.includes("fa-x")) {
         hideSidebar()
         showBurger()
 
-        if(window.screen.orientation.type === "portrait-primary") {
+        if (window.screen.orientation.type === "portrait-primary") {
             chat.style.display = "flex"
             sideMenu.style.width = "15%"
         }
-    }else {
+    } else {
         showSidebar()
         showX()
 
-        if(window.screen.orientation.type === "portrait-primary") {
+        if (window.screen.orientation.type === "portrait-primary") {
             chat.style.display = "none"
             sideMenu.style.width = "100%"
         }
@@ -368,18 +408,18 @@ const createSnippetHeaders = (codeHeaders, snippet, index) => {
 }
 
 const createHeaderTags = (alpacaConvo) => {
-    let lines =  alpacaConvo.innerHTML.split('\n')
+    let lines = alpacaConvo.innerHTML.split('\n')
     lines.forEach((line, i) => {
-        if(line.startsWith('#')) {
+        if (line.startsWith('#')) {
             lines[i] = `<h1 class="tag-header">${line.slice(2)}</h1>`
         }
-        if(line.startsWith('##')) {
+        if (line.startsWith('##')) {
             lines[i] = `<h2 class="tag-header">${line.slice(3)}</h2>`
         }
-        if(line.startsWith('###')) {
+        if (line.startsWith('###')) {
             lines[i] = `<h3 class="tag-header">${line.slice(4)}</h3>`
         }
-        if(line.startsWith('####')) {
+        if (line.startsWith('####')) {
             lines[i] = `<h4>${line.slice(5)}</h4>`
         }
     })
@@ -424,6 +464,8 @@ const init = async () => {
 window.addEventListener('DOMContentLoaded', init)
 window.addEventListener('resize', resizeLayout)
 document.body.addEventListener('keypress', sendByEnter)
+chat.addEventListener('dragover', (e) => onImgDragover(e))
+chat.addEventListener('drop', (e) => onImgDrop(e))
 burgerMenu.addEventListener('click', handleSidebar)
 plane.addEventListener('click', send)
 optClean.addEventListener('click', cleanChat)
@@ -433,9 +475,9 @@ input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
 // WSS
 
 let socket
-if(window.location.href.includes('https://')) {
+if (window.location.href.includes('https://')) {
     socket = new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
-}else {
+} else {
     socket = new WebSocket(`ws://${ALPACA_URL.replace('http://', '')}`)
 }
 
@@ -446,7 +488,7 @@ socket.addEventListener('open', async () => {
 })
 
 socket.addEventListener('message', (event) => {
-    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > p')].at(-1)
+    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
 
     if (event.data.includes(`{"stats":`)) {
         let { stats } = JSON.parse(event.data)
