@@ -389,6 +389,7 @@ const resizeLayout = () => {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
         showBurger()
+        chat.style.display = "flex"
     } else {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
