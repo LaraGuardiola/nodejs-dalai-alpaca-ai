@@ -300,6 +300,10 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     }
 
     p.innerHTML = msg
+
+    if(pSection.children.length > 1) {
+        p.innerHTML = p.innerHTML + "<br><br>"
+    }
 }
 
 const hasChatOverflow = () => {

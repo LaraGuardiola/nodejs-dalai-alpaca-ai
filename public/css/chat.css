@@ -298,9 +298,11 @@ li {
     height: 0.3em;
     border-radius: 50%;
     background-color: #05D962;
+    margin: 0.15em;
 }
 
 .container {
+    display: flex;
     position: relative;
     bottom: 10px;
     right: 50px;
@@ -366,7 +368,7 @@ option:checked {
 }
 
 #option-attach {
-    margin-right: 0.3em;
+    margin-right: 0.45em;
 }
 
 /* snippets */
