@@ -66,6 +66,11 @@ li {
     gap: 1rem;
     align-items: center;
     user-select: none;
+    overflow-y: scroll;
+}
+
+.side-menu::-webkit-scrollbar {
+    display: none;
 }
 
 .burger-menu {
@@ -386,7 +391,7 @@ code {
 
 /* notifications */
 .notification {
-    display: flex;
+    display: none;
     align-items: center;
     font-family: 'Montserrat';
     color: white;
@@ -439,5 +444,15 @@ code {
     }
     .mini-logo {
         display: none !important;
+    }
+
+    .side-menu {
+        width: 100% !important;
+    }
+}
+
+@media (orientation: landscape) {
+    .side-menu {
+        width: 15% !important;
     }
 }

@@ -56,7 +56,14 @@ const sendByEnter = async (event) => {
 
 const onImgDragover = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     chat.classList.add('dragging-over')
+}
+
+const onImgDragLeave = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    chat.classList.remove('dragging-over')
 }
 
 const onImgDrop = (e) => {
@@ -301,7 +308,7 @@ const createChatbox = (msg = '', isAlpaca = true) => {
 
     p.innerHTML = msg
 
-    if(pSection.children.length > 1) {
+    if (pSection.children.length > 1) {
         p.innerHTML = p.innerHTML + "<br><br>"
     }
 }
@@ -339,11 +346,13 @@ const onSnippetClipboardClick = async (codeSnippet) => {
 }
 
 const showNotification = (msg) => {
+    notification.style.display = "flex"
     notification.innerHTML = `<i class="fa-solid fa-bell"></i> ${msg}`
     notification.style.animation = 'fadeAndMove 0.5s forwards ease-in'
     setTimeout(() => {
         notification.style.animation = 'fadeOut 0.5s forwards ease-in'
     }, 3000)
+    setTimeout(() => notification.style.display = "none", 6000)
 }
 
 const hideSidebar = () => sideMenu.style.display = "none"
@@ -360,33 +369,30 @@ const handleSidebar = () => {
     if (burgerMenu.firstChild.className.includes("fa-x")) {
         hideSidebar()
         showBurger()
-
-        if (window.screen.orientation.type === "portrait-primary") {
+        if (screen.orientation.type === "portrait-primary") {
             chat.style.display = "flex"
-            sideMenu.style.width = "15%"
         }
     } else {
         showSidebar()
         showX()
-
-        if (window.screen.orientation.type === "portrait-primary") {
+        if (screen.orientation.type === "portrait-primary") {
             chat.style.display = "none"
-            sideMenu.style.width = "100%"
         }
     }
 }
 
 const resizeLayout = () => {
+    //always closing sidebar to avoid headaches with the layout tbh
     let chatBoxes = document.querySelectorAll('.chat-box')
     const pageWidth = mainspace.offsetWidth
-    if (pageWidth <= viewportWidth / 2) {
+    if (viewportWidth > 468) {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
         showBurger()
     } else {
-        // showSidebar()
+        hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
-        // showX()
+        showBurger()
     }
 }
 
@@ -491,10 +497,11 @@ const init = async () => {
 
 window.addEventListener('DOMContentLoaded', init)
 window.addEventListener('resize', resizeLayout)
+burgerMenu.addEventListener('click', handleSidebar)
 document.body.addEventListener('keypress', sendByEnter)
 chat.addEventListener('dragover', (e) => onImgDragover(e))
+chat.addEventListener('dragleave', (e) => onImgDragLeave(e))
 chat.addEventListener('drop', (e) => onImgDrop(e))
-burgerMenu.addEventListener('click', handleSidebar)
 plane.addEventListener('click', send)
 optPaperclip.addEventListener('click', attachImg)
 optClean.addEventListener('click', cleanChat)
