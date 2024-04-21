@@ -23,8 +23,8 @@ export const restCallLLM = async (record) => {
 
 //WSS - Takes socket and the message
 export const wssCallLLM = async (ws, msg) => {
-    let [message, modelOption] = JSON.parse(msg)
-    LLMContext.push({ role: 'user', content: message.toString() })
+    let [message, modelOption, images] = JSON.parse(msg)
+    LLMContext.push({ role: 'user', content: message.toString(), images: images })
     try {
         const response = await ollama.chat({ model: modelOption, messages: LLMContext, stream: true })
         let responseStr = ''
@@ -43,8 +43,9 @@ export const wssCallLLM = async (ws, msg) => {
             LLMContext.push({ role: 'assistant', content: responseStr.toString() })
             console.log(LLMContext)
         }
-    } catch (error) {
+    } catch ({error}) {
         console.error(error)
+        setTimeout(() => ws.send(`error: ${error}`), 200)
     }
 }
 

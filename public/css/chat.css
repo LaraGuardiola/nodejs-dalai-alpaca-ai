@@ -66,6 +66,11 @@ li {
     gap: 1rem;
     align-items: center;
     user-select: none;
+    overflow-y: scroll;
+}
+
+.side-menu::-webkit-scrollbar {
+    display: none;
 }
 
 .burger-menu {
@@ -156,6 +161,10 @@ li {
     justify-content: flex-start;
 }
 
+.dragging-over {
+    filter: brightness(0.5);
+}
+
 .chat-box {
     display: flex;
     background-color: #343541; 
@@ -163,12 +172,21 @@ li {
     width: 100%;
 }
 
-.chat-box p {
+.chat-box > .flex-column p {
     line-height: 150%;
     user-select: text;
     word-break: break-word;
     /* thanks god for pre-wrap, text comes already formatted so I don't have to hack my way */
     white-space: pre-wrap;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    img {
+        width: 100%;
+        max-width: 1024px;
+    }
 }
 
 .upper-chat {
@@ -182,11 +200,33 @@ li {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-height: 300px;
+    max-height: 400px;
     background-color: #343541;
     border-top: 1px solid#05D962;
     user-select: none;
     padding: 1em;
+}
+
+.attachment-chat {
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    justify-content: center;
+    align-items: center;
+}
+
+.attachment {
+    img {
+       max-height: 100px !important; 
+       padding: 0 0.5em 0.5em 0.5em;
+    }
+}
+
+.chat-wrapper {
+   display: flex;
+   width: inherit;
+   justify-content: center;
+   align-items: center;
 }
 
 .snippet-header {
@@ -263,9 +303,11 @@ li {
     height: 0.3em;
     border-radius: 50%;
     background-color: #05D962;
+    margin: 0.15em;
 }
 
 .container {
+    display: flex;
     position: relative;
     bottom: 10px;
     right: 50px;
@@ -330,6 +372,10 @@ option:checked {
     padding: 0.25em;
 }
 
+#option-attach {
+    margin-right: 0.45em;
+}
+
 /* snippets */
 
 pre > code > span{
@@ -345,7 +391,7 @@ code {
 
 /* notifications */
 .notification {
-    display: flex;
+    display: none;
     align-items: center;
     font-family: 'Montserrat';
     color: white;
@@ -398,5 +444,15 @@ code {
     }
     .mini-logo {
         display: none !important;
+    }
+
+    .side-menu {
+        width: 100% !important;
+    }
+}
+
+@media (orientation: landscape) {
+    .side-menu {
+        width: 15% !important;
     }
 }
