@@ -14,6 +14,7 @@ let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
 let dots = document.querySelectorAll('.dot')
 let plane = document.querySelector('.send-icon')
+let optPaperclip = document.querySelector('#option-attach')
 let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
 let notification = document.querySelector('.notification')
@@ -55,14 +56,16 @@ const sendByEnter = async (event) => {
 
 const onImgDragover = (e) => {
     e.preventDefault()
+    chat.classList.add('dragging-over')
 }
 
 const onImgDrop = (e) => {
     e.preventDefault()
+    chat.classList.remove('dragging-over')
     const files = e.dataTransfer.files
 
     Array.from(files).forEach(file => {
-        if(file.type.startsWith("image/")) {
+        if (file.type.startsWith("image/")) {
             const reader = new FileReader()
             reader.onloadend = (ev) => {
                 const img = document.createElement('img')
@@ -182,6 +185,29 @@ const manageInputChatPasteEvent = (e) => {
     input.innerText = input.innerText + text
 }
 
+const attachImg = () => {
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.multiple = true
+    fileInput.accept = 'image/*'
+    fileInput.click()
+
+    fileInput.addEventListener('change', () => {
+        const { files } = fileInput
+        Array.from(files).forEach((file) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader()
+                reader.onloadend = (ev) => {
+                    const img = document.createElement('img')
+                    img.src = ev.target.result
+                    attachment.appendChild(img)
+                }
+                reader.readAsDataURL(file)
+            }
+        })
+    })
+}
+
 const displayDots = () => {
     plane.style.display = "none"
     input.removeAttribute('contenteditable')
@@ -222,7 +248,7 @@ const getConvo = () => {
 
 const getImages = () => {
     let lastUserConvo = document.querySelectorAll('.user-convo')
-    let imagesDom =  Array.from(lastUserConvo).at(-1).querySelectorAll('.flex-column img')
+    let imagesDom = Array.from(lastUserConvo).at(-1).querySelectorAll('.flex-column img')
     let images = []
     imagesDom.forEach(img => {
         images.push(img.src.split(',')[1])
@@ -259,7 +285,7 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     pSection.append(p)
 
     //attach img to chatbox
-    if(attachment.children.length > 0) {
+    if (attachment.children.length > 0) {
         Array.from(attachment.children).forEach(img => {
             pSection.appendChild(img)
         })
@@ -466,6 +492,7 @@ chat.addEventListener('dragover', (e) => onImgDragover(e))
 chat.addEventListener('drop', (e) => onImgDrop(e))
 burgerMenu.addEventListener('click', handleSidebar)
 plane.addEventListener('click', send)
+optPaperclip.addEventListener('click', attachImg)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
 input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))

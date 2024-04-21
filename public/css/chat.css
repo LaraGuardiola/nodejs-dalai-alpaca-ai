@@ -156,6 +156,10 @@ li {
     justify-content: flex-start;
 }
 
+.dragging-over {
+    filter: brightness(0.5);
+}
+
 .chat-box {
     display: flex;
     background-color: #343541; 
@@ -359,6 +363,10 @@ option:checked {
 
 .options {
     padding: 0.25em;
+}
+
+#option-attach {
+    margin-right: 0.3em;
 }
 
 /* snippets */
