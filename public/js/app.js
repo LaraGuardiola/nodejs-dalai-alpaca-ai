@@ -358,6 +358,9 @@ const showNotification = (msg) => {
 const hideSidebar = () => sideMenu.style.display = "none"
 const showSidebar = () => sideMenu.style.display = "flex"
 
+const hideChat = () => chat.style.display = "none"
+const showChat = () => chat.style.display = "flex"
+
 const showX = () => burgerMenu.innerHTML = `<i class="fa-solid fa-x"></i>`
 const showBurger = () => burgerMenu.innerHTML = `<i class="fa-solid fa-bars"></i>`
 
@@ -370,13 +373,13 @@ const handleSidebar = () => {
         hideSidebar()
         showBurger()
         if (screen.orientation.type === "portrait-primary") {
-            chat.style.display = "flex"
+            showChat()
         }
     } else {
         showSidebar()
         showX()
         if (screen.orientation.type === "portrait-primary") {
-            chat.style.display = "none"
+            hideChat()
         }
     }
 }
@@ -389,7 +392,7 @@ const resizeLayout = () => {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
         showBurger()
-        chat.style.display = "flex"
+        showChat()
     } else {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
