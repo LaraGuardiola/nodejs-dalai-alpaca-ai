@@ -88,7 +88,6 @@ export const getModels = async () => {
         models = arrModels
             .map(model => model.split(' ')[0])
             .map(model => {
-                console.log(model)
                 if (model.includes(':latest')){
                     return model.split(':latest')[0]
                 }

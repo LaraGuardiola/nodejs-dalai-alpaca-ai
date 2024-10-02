@@ -20,6 +20,10 @@ app.use((req, res, next) => getIp(req, res, next))
 app.use(morgan('dev'))
 app.use(express.static('public'))
 app.use(express.json())
+app.use((err, req, res, next) => {
+    console.error('Server error:', err)
+    res.status(500).json({ success: false, message: "Error interno del servidor", error: err.message })
+})
 
 const server = http.createServer(app)
 const wss = new WebSocketServer({ server })
@@ -67,6 +71,11 @@ app.post('/api/tts', async (req, res) => {
     }
 })
 
+// In order to handle the error ollama throws when aborting
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise: ', reason)
+})
+
 //WSS
 
 wss.on('connection', async(ws) => {
@@ -79,5 +88,5 @@ wss.on('connection', async(ws) => {
         }else {
             wssCallLLM(ws, MSG)
         }
-    });
+    })
 })

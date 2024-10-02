@@ -36,9 +36,9 @@ export const wssCallLLM = async (ws, msg) => {
 
 export const abortResponse = async (modelOption) => {
     try {
-        await ollama.chat({ model: modelOption, messages: [], keep_alive: 0 }) 
+        return ollama.abort()
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }  
 }
 
