@@ -126,11 +126,6 @@ const getModelList = async () => {
 }
 
 const getAbortResponse = async () => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close()
-    }
-    socket = null
-
     try {
         const response = await fetch(`${ALPACA_URL}/api/llm/abort`, {
             method: 'POST',
@@ -139,9 +134,6 @@ const getAbortResponse = async () => {
         })
 
         const data = await response.json()
-        // socket.
-        socket = setWebsocketConnection()
-        setWebsocketEvents()
         removeStopResponseIcon()
         displayPlane()
     } catch (error) {
