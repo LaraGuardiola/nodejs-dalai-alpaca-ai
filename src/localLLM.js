@@ -34,7 +34,7 @@ export const wssCallLLM = async (ws, msg) => {
     }
 }
 
-export const abortResponse = async (modelOption) => {
+export const abortResponse = async () => {
     try {
         return ollama.abort()
     } catch (error) {

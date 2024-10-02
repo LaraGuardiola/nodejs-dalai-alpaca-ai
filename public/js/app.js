@@ -128,12 +128,12 @@ const getModelList = async () => {
 const getAbortResponse = async () => {
     try {
         const response = await fetch(`${ALPACA_URL}/api/llm/abort`, {
-            method: 'POST',
-            headers: { 'Accept': 'application/json', "Content-Type": "application/json" },
-            body: JSON.stringify({ model: modelInput.value })
+            method: 'GET',
+            headers: { 'Accept': 'application/json', "Content-Type": "application/json" }
         })
 
         const data = await response.json()
+        createResponseCancelledSpan()
         removeStopResponseIcon()
         displayPlane()
     } catch (error) {
@@ -348,6 +348,14 @@ const createTimeSpentSpan = (tokens, time) => {
     const span = document.createElement("span")
     span.classList.add('time-spent')
     span.textContent = `${modelInput.value} - token/s: ${tokens} - Time spent: ${time}s`
+    alpacas.at(-1).appendChild(span)
+}
+
+const createResponseCancelledSpan = () => {
+    let alpacas = [...document.querySelectorAll('.alpaca-convo')]
+    const span = document.createElement("span")
+    span.classList.add('response-cancelled')
+    span.textContent = `${modelInput.value} - Response cancelled`
     alpacas.at(-1).appendChild(span)
 }
 

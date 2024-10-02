@@ -173,11 +173,15 @@ li {
     position: relative;
 }
 
-.time-spent {
+.time-spent, .response-cancelled {
     position: absolute;
     right: 10px;
     bottom: 5px;
     font-size: 12px;
+}
+
+.response-cancelled {
+    color: orangered;
 }
 
 .chat-box > .flex-column p {

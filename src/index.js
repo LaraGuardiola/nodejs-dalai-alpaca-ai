@@ -37,9 +37,8 @@ app.post('/api/llm', async (_, res) => {
     return res.json({ alpaca: 'shit is working' })
 })
 
-app.post('/api/llm/abort', async (req, res) => {
-    const { model } = req.body
-    await abortResponse(model)
+app.get('/api/llm/abort', async (_, res) => {
+    await abortResponse()
     res.json({ alpaca: 'Response has been cancelled' })
 })
 
@@ -72,8 +71,8 @@ app.post('/api/tts', async (req, res) => {
 })
 
 // In order to handle the error ollama throws when aborting
-process.on('unhandledRejection', (reason) => {
-    console.error('Unhandled promise: ', reason)
+process.on('unhandledRejection', () => {
+    console.error('Response from the LLM has been aborted.')
 })
 
 //WSS
