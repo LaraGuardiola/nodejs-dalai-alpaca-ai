@@ -2,7 +2,7 @@ import express from "express"
 import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
-import { wssCallLLM, cleanLLMContext } from './localLLM.js'
+import { wssCallLLM, cleanLLMContext, abortResponse } from './localLLM.js'
 import { exportToJson, getStats, getModels, TTS, getIp, createZrokPublicDomain } from './utils.js'
 import cors from 'cors'
 
@@ -26,11 +26,17 @@ const wss = new WebSocketServer({ server })
 
 const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
-  console.log(`Servidor iniciado en http://localhost:${PORT}`)
+  console.log(`Server started at http://localhost:${PORT}`)
 })
 
 app.post('/api/llm', async (_, res) => {
     return res.json({ alpaca: 'shit is working' })
+})
+
+app.post('/api/llm/abort', async (req, res) => {
+    const { model } = req.body
+    await abortResponse(model)
+    res.json({ alpaca: 'Response has been cancelled' })
 })
 
 app.get('/api/models', async (_, res) => {

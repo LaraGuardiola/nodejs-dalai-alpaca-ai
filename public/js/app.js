@@ -24,6 +24,16 @@ let attachment = document.querySelector('.attachment')
 const ALPACA_URL = window.location.href.slice(0, -1)
 const viewportWidth = window.screen.width
 
+const setWebsocketConnection = () => {
+    if (window.location.href.includes('https://')) {
+        return new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
+    } else {
+        return new WebSocket(`ws://${ALPACA_URL.replace('http://', '')}`)
+    }
+}
+
+let socket = setWebsocketConnection()
+
 const notifications = {
     clipboard: "Snippet has been copied",
     json: "Created json on the repository",
@@ -110,20 +120,30 @@ const getModelList = async () => {
             option.classList.add('montserrat')
             modelInput.appendChild(option)
         })
-        console.log(models)
     } catch (error) {
         console.log(error)
     }
 }
 
 const getAbortResponse = async () => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close()
+    }
+    socket = null
+
     try {
-        const response = await fetch(`${ALPACA_URL}/api/llm/abort?clientId=${clientId}`, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' }
+        const response = await fetch(`${ALPACA_URL}/api/llm/abort`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', "Content-Type": "application/json" },
+            body: JSON.stringify({ model: modelInput.value })
         })
 
         const data = await response.json()
+        // socket.
+        socket = setWebsocketConnection()
+        setWebsocketEvents()
+        removeStopResponseIcon()
+        displayPlane()
     } catch (error) {
         console.log(error)
     }
@@ -350,8 +370,8 @@ const createStopResponseIcon = () => {
 }
 
 const removeStopResponseIcon = () => {
-    let i = document.querySelector(".fa-circle-stop")
-    i.remove()
+    let options = [...document.querySelectorAll(".options")]
+    if(options.length === 4) options[3].remove()
 }
 
 const hasChatOverflow = () => {
@@ -551,6 +571,7 @@ const formatAfterResponse = (alpacaConvo) => {
 // EVENTS - lifecycle
 
 const init = async () => {
+    setWebsocketConnection()
     await getModelList()
 }
 
@@ -569,42 +590,39 @@ input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
 
 // WSS
 
-let socket
-let clientId = null
-if (window.location.href.includes('https://')) {
-    socket = new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
-} else {
-    socket = new WebSocket(`ws://${ALPACA_URL.replace('http://', '')}`)
+const setWebsocketEvents = () => {
+    socket.addEventListener('open', async () => {
+        await getStats()
+        console.log('WebSocket connection established')
+    })
+    
+    socket.addEventListener('message', (event) => {
+        let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
+        if (event.data.includes(`error:`)) {
+            showNotification(event.data.replace('error: ', ''))
+            displayPlane()
+        }
+        if (event.data.includes(`{"stats":`)) {
+            let { stats } = JSON.parse(event.data)
+            refreshStats(stats)
+            return
+        }
+        if (!event.data.startsWith("{done: true}")) {
+            formatLLMResponse(event.data, alpacaConvo)
+        } else {
+            let time = event.data.split((','))[1]
+            let tokens = event.data.split((','))[2]
+            formatAfterResponse(alpacaConvo)
+            removeStopResponseIcon()
+            createTimeSpentSpan(tokens, time)
+            displayPlane()
+            // textToTTS(alpacaConvo.innerText)
+        }
+    
+        hasChatOverflow()
+    })
 }
 
+setWebsocketEvents()
 
-socket.addEventListener('open', async () => {
-    await getStats()
-    console.log('WebSocket connection established')
-})
 
-socket.addEventListener('message', (event) => {
-    let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
-    if (event.data.includes(`error:`)) {
-        showNotification(event.data.replace('error: ', ''))
-        displayPlane()
-    }
-    if (event.data.includes(`{"stats":`)) {
-        let { stats } = JSON.parse(event.data)
-        refreshStats(stats)
-        return
-    }
-    if (!event.data.startsWith("{done: true}")) {
-        formatLLMResponse(event.data, alpacaConvo)
-    } else {
-        let time = event.data.split((','))[1]
-        let tokens = event.data.split((','))[2]
-        formatAfterResponse(alpacaConvo)
-        removeStopResponseIcon()
-        createTimeSpentSpan(tokens, time)
-        displayPlane()
-        // textToTTS(alpacaConvo.innerText)
-    }
-
-    hasChatOverflow()
-})
