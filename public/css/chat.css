@@ -170,6 +170,14 @@ li {
     background-color: #343541; 
     padding: 2em;
     width: 100%;
+    position: relative;
+}
+
+.time-spent {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    font-size: 12px;
 }
 
 .chat-box > .flex-column p {
@@ -319,8 +327,12 @@ i {
     font-size:x-large;
 }
 
-i:hover {
+.options:hover {
     scale: 1.2;
+}
+
+.options:hover > .fa-circle-stop {
+    scale: 1;
 }
 
 .send-icon {
@@ -412,6 +424,11 @@ code {
     margin-right: 0.5em;
 }
 
+.fa-circle-stop {
+    color: orangered;
+    animation: stopResponseAnimation 1.2s infinite ease-in-out;
+}
+
 @keyframes fadeAndMove {
     0% {
       opacity: 0;
@@ -436,6 +453,18 @@ code {
         top: 0;
     }
 }
+
+@keyframes stopResponseAnimation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 
 
 @media (orientation: portrait) {

@@ -14,6 +14,7 @@ let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
 let dots = document.querySelectorAll('.dot')
 let plane = document.querySelector('.send-icon')
+let optMenu = document.querySelector('.options-menu')
 let optPaperclip = document.querySelector('#option-attach')
 let optExport = document.querySelector('#option-export')
 let optClean = document.querySelector('#option-clean')
@@ -39,8 +40,7 @@ const send = async (event) => {
         createChatbox(input.innerHTML.replaceAll('<br>', '\n'), false)
         let modelOption = document.querySelector('option:checked').value
         let messageContext = JSON.stringify([input.textContent, modelOption, getImages()])
-        socket.send(messageContext)
-        callLLM()
+        callLLM(messageContext)
         cleanInputChat()
     }
 }
@@ -116,6 +116,19 @@ const getModelList = async () => {
     }
 }
 
+const getAbortResponse = async () => {
+    try {
+        const response = await fetch(`${ALPACA_URL}/api/llm/abort?clientId=${clientId}`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+
+        const data = await response.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const getAlpacaJson = async () => {
     let convo = getConvo()
     if (convo.length === 0) return showNotification(notifications.chat_is_empty)
@@ -131,11 +144,16 @@ const getAlpacaJson = async () => {
     console.log(json)
 }
 
-const callLLM = async () => {
+const callLLM = async (messageContext) => {
+    socket.send(messageContext)
     displayDots()
     try {
         await fetch(`${ALPACA_URL}/api/llm`, {
-            method: "POST"
+            method: "POST",
+            body: messageContext,
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
         createChatbox()
     } catch (error) {
@@ -145,8 +163,7 @@ const callLLM = async () => {
 
 //unused, not happy with the result
 const textToTTS = async (msg) => {
-    console.log(msg)
-    const oneLineMsg = msg.split("\n").join(' ')
+    const oneLineMsg = msg.split("\n").join(' ').toUpperCase()
     try {
         const response = await fetch(`${ALPACA_URL}/api/tts`, {
             method: "POST",
@@ -279,6 +296,7 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     if (isAlpaca) {
         div.style.backgroundColor = "#444654"
         div.classList.add('alpaca-convo')
+        createStopResponseIcon()
     }
     if (!isAlpaca) {
         img.style.backgroundImage = "url(\"./assets/img/snoop.jpeg\")"
@@ -313,6 +331,29 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     }
 }
 
+const createTimeSpentSpan = (tokens, time) => {
+    let alpacas = [...document.querySelectorAll('.alpaca-convo')]
+    const span = document.createElement("span")
+    span.classList.add('time-spent')
+    span.textContent = `${modelInput.value} - token/s: ${tokens} - Time spent: ${time}s`
+    alpacas.at(-1).appendChild(span)
+}
+
+const createStopResponseIcon = () => {
+    const i = document.createElement("i")
+    const span = document.createElement("span")
+    i.classList.add("fa-regular","fa-circle-stop")
+    span.classList.add("options")
+    span.appendChild(i)
+    optMenu.appendChild(span)
+    i.addEventListener("click", getAbortResponse)
+}
+
+const removeStopResponseIcon = () => {
+    let i = document.querySelector(".fa-circle-stop")
+    i.remove()
+}
+
 const hasChatOverflow = () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
     let totalChatHeight = 0
@@ -338,8 +379,22 @@ const cleanChat = async () => {
 const onSnippetClipboardClick = async (codeSnippet) => {
     console.log('at least this shit is working')
     try {
-        await navigator.clipboard.writeText(codeSnippet)
-        showNotification(notifications.clipboard)
+        if (navigator.clipboard) {
+            await navigator.clipboard.writeText(codeSnippet)
+        }
+        
+        // If you are using local network, this will work
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+            const textarea = document.createElement('textarea')
+            textarea.value = codeSnippet
+            document.body.appendChild(textarea)
+            textarea.select()
+            document.execCommand('copy')
+            document.body.removeChild(textarea)
+            showNotification(notifications.clipboard)
+        } else {
+            showNotification(notifications.clipboard)
+        }
     } catch (error) {
         showNotification(error)
     }
@@ -515,6 +570,7 @@ input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
 // WSS
 
 let socket
+let clientId = null
 if (window.location.href.includes('https://')) {
     socket = new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
 } else {
@@ -529,7 +585,6 @@ socket.addEventListener('open', async () => {
 
 socket.addEventListener('message', (event) => {
     let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
-
     if (event.data.includes(`error:`)) {
         showNotification(event.data.replace('error: ', ''))
         displayPlane()
@@ -539,10 +594,14 @@ socket.addEventListener('message', (event) => {
         refreshStats(stats)
         return
     }
-    if (event.data !== "{done: true}") {
+    if (!event.data.startsWith("{done: true}")) {
         formatLLMResponse(event.data, alpacaConvo)
     } else {
+        let time = event.data.split((','))[1]
+        let tokens = event.data.split((','))[2]
         formatAfterResponse(alpacaConvo)
+        removeStopResponseIcon()
+        createTimeSpentSpan(tokens, time)
         displayPlane()
         // textToTTS(alpacaConvo.innerText)
     }
