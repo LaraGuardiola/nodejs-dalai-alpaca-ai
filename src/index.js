@@ -13,6 +13,7 @@ if(env === 'zrok') domain = createZrokPublicDomain()
 
 const app = express()
 
+// MIDDLEWARES
 app.use(cors({
     origin: domain
 }))
@@ -22,9 +23,10 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use((err, req, res, next) => {
     console.error('Server error:', err)
-    res.status(500).json({ success: false, message: "Error interno del servidor", error: err.message })
+    res.status(500).json({ success: false, message: "Server error:", error: err.message })
 })
 
+// Express & websocket servers - ENDPOINTS
 const server = http.createServer(app)
 const wss = new WebSocketServer({ server })
 
@@ -76,7 +78,6 @@ process.on('unhandledRejection', () => {
 })
 
 //WSS
-
 wss.on('connection', async(ws) => {
     console.log('WSS connected.')
     
