@@ -17,7 +17,7 @@ app.use(cors({
     origin: domain
 }))
 app.use((req, res, next) => getIp(req, res, next))
-app.use(morgan('dev'))
+app.use(morgan('common'))
 app.use(express.static('public'))
 app.use(express.json())
 app.use((err, req, res, next) => {

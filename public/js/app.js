@@ -255,7 +255,9 @@ const displayPlane = () => {
     dots.forEach(dot => dot.style.display = "none")
     plane.style.display = "inline-block"
     input.setAttribute('contenteditable', 'true')
-    input.focus()
+    if (!/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent)) {
+        input.focus()
+    }
 }
 
 const refreshStats = (computerStats) => {
