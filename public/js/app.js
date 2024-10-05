@@ -1,4 +1,4 @@
-import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/highlight.min.js' // from cdn works, locally I'm missing something
+import { hljs } from './highlight.js'
 
 let mainspace = document.querySelector('.mainspace')
 let chat = document.querySelector('.chat')
@@ -12,6 +12,7 @@ let threadsCores = document.querySelector('#threads-cores')
 let memory = document.querySelector('#memory')
 let cpuPercentage = document.querySelector('#cpu-percentage')
 let ramPercentage = document.querySelector('#ram-percentage')
+let placeholder = document.querySelector('#placeholder')
 let dots = document.querySelectorAll('.dot')
 let plane = document.querySelector('.send-icon')
 let optMenu = document.querySelector('.options-menu')
@@ -120,6 +121,7 @@ const getModelList = async () => {
             option.classList.add('montserrat')
             modelInput.appendChild(option)
         })
+        onModelInputChange()
     } catch (error) {
         console.log(error)
     }
@@ -464,7 +466,6 @@ const handleSidebar = () => {
 const resizeLayout = () => {
     //always closing sidebar to avoid headaches with the layout tbh
     let chatBoxes = document.querySelectorAll('.chat-box')
-    const pageWidth = mainspace.offsetWidth
     if (viewportWidth > 468) {
         hideSidebar()
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
@@ -475,6 +476,23 @@ const resizeLayout = () => {
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
         showBurger()
     }
+    onModelInputChange()
+}
+
+const onModelInputChange = () => {
+    if(/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent) && window.matchMedia("(orientation: portrait)").matches) {
+        placeholder.textContent = `Write`
+    }else {
+        placeholder.textContent = `Write to ${modelInput.value}`
+    }
+}
+
+const hidePlaceholder = () => {
+    placeholder.style.display = "none"
+}
+
+const showPlaceholder = () => {
+    placeholder.style.display = "block"
 }
 
 // FORMATS
@@ -584,11 +602,14 @@ document.body.addEventListener('keypress', sendByEnter)
 chat.addEventListener('dragover', (e) => onImgDragover(e))
 chat.addEventListener('dragleave', (e) => onImgDragLeave(e))
 chat.addEventListener('drop', (e) => onImgDrop(e))
+modelInput.addEventListener('change', onModelInputChange)
 plane.addEventListener('click', send)
 optPaperclip.addEventListener('click', attachImg)
 optClean.addEventListener('click', cleanChat)
 optExport.addEventListener('click', getAlpacaJson)
 input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
+input.addEventListener('focus', hidePlaceholder)
+input.addEventListener('blur', showPlaceholder)
 
 // WSS
 

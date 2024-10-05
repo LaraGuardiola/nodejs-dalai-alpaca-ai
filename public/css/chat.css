@@ -216,7 +216,7 @@ li {
     background-color: #343541;
     border-top: 1px solid#05D962;
     user-select: none;
-    padding: 1em;
+    padding: 0.5em;
 }
 
 .attachment-chat {
@@ -246,7 +246,7 @@ li {
     justify-content: space-between;
     background-color: #343541;
     color: #05D962;
-    padding: 0.8em;
+    padding: 0.4em;
     border-bottom: 1px solid #05D962;
 }
 
@@ -280,7 +280,9 @@ li {
     min-height: 58px;
     height: auto;
     max-height: 200px;
-    width: 70%;
+    max-width: 600px;
+    width: inherit;
+    min-width: 80px;
     background-color: #444654;
     resize: none;
     padding: 1em;
@@ -291,7 +293,7 @@ li {
     caret-color: #05D962;
     overflow-wrap: anywhere;
     overflow-y: auto;
-    border-radius: 5px;
+    border-radius: 50px;
     border: 1px solid #444654;
     white-space: pre-wrap;
     /* text-align: center; */
@@ -305,6 +307,11 @@ li {
 
 #input-chat::-webkit-scrollbar {
   display: none;
+}
+
+#placeholder {
+    cursor: text;
+    color: gray;
 }
 
  /* typing animation */
@@ -429,6 +436,7 @@ code {
 }
 
 .fa-circle-stop {
+    margin-left: 3px;
     color: orangered;
     animation: stopResponseAnimation 1.2s infinite ease-in-out;
 }

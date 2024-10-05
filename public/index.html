@@ -10,7 +10,7 @@
     <link rel="shortcut icon" type="image/png" href="./assets/img/pandora-box.webp">
     <link rel="stylesheet" href="./css/atom-one-dark.css">
     <script type="module">
-        import hljs from './js/highlight.min.js';
+        import { hljs } from './js/highlight.js';
         hljs.highlightAll()
     </script>
     <title>Pandora LLM Web UI</title>
@@ -66,7 +66,9 @@
                     </div>
 
                     <div class="chat-wrapper">
-                        <span tabindex="0" placeholder="Enter prompt" type="text" name="input-chat" id="input-chat" contenteditable></span>
+                        <span tabindex="0" placeholder="Enter prompt" type="text" name="input-chat" id="input-chat" contenteditable>
+                            <label id="placeholder" for="message"></label>
+                        </span>
                         <i contenteditable="false" class="fa-solid fa-paper-plane send-icon" title="Send message"></i>
                         <div class="container">
                             <div class="dot"></div>
