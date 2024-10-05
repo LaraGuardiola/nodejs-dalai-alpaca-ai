@@ -296,7 +296,11 @@ li {
     border-radius: 50px;
     border: 1px solid #444654;
     white-space: pre-wrap;
-    /* text-align: center; */
+    mask: none;
+}
+
+.masked {
+    mask: linear-gradient(black 70%, transparent);
 }
 
 #input-chat:focus {

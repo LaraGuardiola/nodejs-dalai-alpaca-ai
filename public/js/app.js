@@ -498,6 +498,21 @@ const showPlaceholder = () => {
         input.append(placeholder)
 }
 
+const onUpperChatScroll = () => {
+    const upperChat = document.querySelector('.upper-chat')
+    const chatBoxes = upperChat.querySelectorAll('.chat-box')
+    let totalChatHeight = Array.from(chatBoxes).reduce((total, chat) => total + chat.offsetHeight, 0)
+
+    const scrollPosition = upperChat.scrollTop + upperChat.clientHeight
+    const isAtBottom = Math.abs(scrollPosition - totalChatHeight) <= 1
+
+    if (isAtBottom) {
+        upperChat.classList.remove("masked");
+    } else {
+        upperChat.classList.add("masked");
+    }
+}
+
 // FORMATS
 
 const formatLLMResponse = (msg, alpacaConvo) => {
@@ -605,6 +620,7 @@ document.body.addEventListener('keypress', sendByEnter)
 chat.addEventListener('dragover', (e) => onImgDragover(e))
 chat.addEventListener('dragleave', (e) => onImgDragLeave(e))
 chat.addEventListener('drop', (e) => onImgDrop(e))
+upperChat.addEventListener('scroll', onUpperChatScroll)
 modelInput.addEventListener('change', onModelInputChange)
 plane.addEventListener('click', send)
 optPaperclip.addEventListener('click', attachImg)
