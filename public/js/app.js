@@ -1,39 +1,54 @@
 import { hljs } from './highlight.js'
+import * as DOM from './dom.js'
 
-let mainspace = document.querySelector('.mainspace')
-let chat = document.querySelector('.chat')
-let sideMenu = document.querySelector('.side-menu')
-let burgerMenu = document.querySelector('.burger-menu')
-let input = document.querySelector('#input-chat')
-let upperChat = document.querySelector('.upper-chat')
-let modelInput = document.querySelector('#model')
-let pcModel = document.querySelector('#pc-model')
-let threadsCores = document.querySelector('#threads-cores')
-let memory = document.querySelector('#memory')
-let cpuPercentage = document.querySelector('#cpu-percentage')
-let ramPercentage = document.querySelector('#ram-percentage')
-let placeholder = document.querySelector('#placeholder')
-let dots = document.querySelectorAll('.dot')
-let plane = document.querySelector('.send-icon')
-let optMenu = document.querySelector('.options-menu')
-let optPaperclip = document.querySelector('#option-attach')
-let optExport = document.querySelector('#option-export')
-let optClean = document.querySelector('#option-clean')
-let notification = document.querySelector('.notification')
-let attachment = document.querySelector('.attachment')
-
-const ALPACA_URL = window.location.href.slice(0, -1)
+const PANDORA_URL = window.location.href.slice(0, -1)
 const viewportWidth = window.screen.width
 
 const setWebsocketConnection = () => {
     if (window.location.href.includes('https://')) {
-        return new WebSocket(`wss://${ALPACA_URL.replace('https://', '')}`)
+        return new WebSocket(`wss://${PANDORA_URL.replace('https://', '')}`)
     } else {
-        return new WebSocket(`ws://${ALPACA_URL.replace('http://', '')}`)
+        return new WebSocket(`ws://${PANDORA_URL.replace('http://', '')}`)
     }
 }
 
-let socket = setWebsocketConnection()
+const socket = setWebsocketConnection()
+
+
+const setWebsocketEvents = () => {
+    socket.addEventListener('open', async () => {
+        await getStats()
+        console.log('WebSocket connection established')
+    })
+    
+    socket.addEventListener('message', (event) => {
+        let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
+        if (event.data.includes(`error:`)) {
+            showNotification(event.data.replace('error: ', ''))
+            displayPlane()
+        }
+        if (event.data.includes(`{"stats":`)) {
+            let { stats } = JSON.parse(event.data)
+            refreshStats(stats)
+            return
+        }
+        if (!event.data.startsWith("{done: true}")) {
+            formatLLMResponse(event.data, alpacaConvo)
+        } else {
+            let time = event.data.split((','))[1]
+            let tokens = event.data.split((','))[2]
+            formatAfterResponse(alpacaConvo)
+            removeStopResponseIcon()
+            createTimeSpentSpan(tokens, time)
+            displayPlane()
+            // textToTTS(alpacaConvo.innerText)
+        }
+    
+        hasChatOverflow()
+    })
+}
+
+setWebsocketEvents()
 
 const notifications = {
     clipboard: "Snippet has been copied",
@@ -45,12 +60,12 @@ const notifications = {
 //MAIN FUNCTIONS
 
 const send = async (event) => {
-    console.log(input.textContent)
-    if (input.textContent) {
+    console.log(DOM.input.textContent)
+    if (DOM.input.textContent) {
         event.preventDefault()
-        createChatbox(input.innerHTML.replaceAll('<br>', '\n'), false)
+        createChatbox(DOM.input.innerHTML.replaceAll('<br>', '\n'), false)
         let modelOption = document.querySelector('option:checked').value
-        let messageContext = JSON.stringify([input.textContent, modelOption, getImages()])
+        let messageContext = JSON.stringify([DOM.input.textContent, modelOption, getImages()])
         callLLM(messageContext)
         cleanInputChat()
     }
@@ -68,18 +83,18 @@ const sendByEnter = async (event) => {
 const onImgDragover = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    chat.classList.add('dragging-over')
+    DOM.chat.classList.add('dragging-over')
 }
 
 const onImgDragLeave = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    chat.classList.remove('dragging-over')
+    DOM.chat.classList.remove('dragging-over')
 }
 
 const onImgDrop = (e) => {
     e.preventDefault()
-    chat.classList.remove('dragging-over')
+    DOM.chat.classList.remove('dragging-over')
     const files = e.dataTransfer.files
 
     Array.from(files).forEach(file => {
@@ -88,7 +103,7 @@ const onImgDrop = (e) => {
             reader.onloadend = (ev) => {
                 const img = document.createElement('img')
                 img.src = ev.target.result
-                attachment.appendChild(img)
+                DOM.attachment.appendChild(img)
             }
             reader.readAsDataURL(file)
         }
@@ -107,7 +122,7 @@ const getStats = async () => {
 
 const getModelList = async () => {
     try {
-        const response = await fetch(`${ALPACA_URL}/api/models`, {
+        const response = await fetch(`${PANDORA_URL}/api/models`, {
             method: 'GET',
             headers: { 'Accept': 'application/json' }
         })
@@ -119,7 +134,7 @@ const getModelList = async () => {
             option.setAttribute('value', model)
             option.innerText = model
             option.classList.add('montserrat')
-            modelInput.appendChild(option)
+            DOM.modelInput.appendChild(option)
         })
         onModelInputChange()
     } catch (error) {
@@ -129,7 +144,7 @@ const getModelList = async () => {
 
 const getAbortResponse = async () => {
     try {
-        const response = await fetch(`${ALPACA_URL}/api/llm/abort`, {
+        const response = await fetch(`${PANDORA_URL}/api/llm/abort`, {
             method: 'GET',
             headers: { 'Accept': 'application/json', "Content-Type": "application/json" }
         })
@@ -146,7 +161,7 @@ const getAbortResponse = async () => {
 const getAlpacaJson = async () => {
     let convo = getConvo()
     if (convo.length === 0) return showNotification(notifications.chat_is_empty)
-    const response = await fetch(`${ALPACA_URL}/api/json`, {
+    const response = await fetch(`${PANDORA_URL}/api/json`, {
         method: "POST",
         body: JSON.stringify(convo),
         headers: {
@@ -162,7 +177,7 @@ const callLLM = async (messageContext) => {
     socket.send(messageContext)
     displayDots()
     try {
-        await fetch(`${ALPACA_URL}/api/llm`, {
+        await fetch(`${PANDORA_URL}/api/llm`, {
             method: "POST",
             body: messageContext,
             headers: {
@@ -179,7 +194,7 @@ const callLLM = async (messageContext) => {
 const textToTTS = async (msg) => {
     const oneLineMsg = msg.split("\n").join(' ').toUpperCase()
     try {
-        const response = await fetch(`${ALPACA_URL}/api/tts`, {
+        const response = await fetch(`${PANDORA_URL}/api/tts`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -196,7 +211,7 @@ const textToTTS = async (msg) => {
 
 const cleanLLMContext = async () => {
     try {
-        await fetch(`${ALPACA_URL}/api/context`, {
+        await fetch(`${PANDORA_URL}/api/context`, {
             method: "POST"
         })
     } catch (error) {
@@ -206,7 +221,7 @@ const cleanLLMContext = async () => {
 
 // UTILS
 
-const cleanInputChat = () => input.innerHTML = ''
+const cleanInputChat = () => DOM.input.innerHTML = ''
 
 //this lovely snippet comes straight from code from deepseek-coder:33b, does the infernal job of formatting the main input when pasting
 const manageInputChatPasteEvent = (e) => {
@@ -220,7 +235,7 @@ const manageInputChatPasteEvent = (e) => {
     text = text.replace(/&gt;/g, '>').replace(/&lt;/g, '<')
 
     // Insert the sanitized plain text into the contenteditable div using innerHTML
-    input.innerText = input.innerText + text
+    DOM.input.innerText = DOM.input.innerText + text
 }
 
 const attachImg = () => {
@@ -238,7 +253,7 @@ const attachImg = () => {
                 reader.onloadend = (ev) => {
                     const img = document.createElement('img')
                     img.src = ev.target.result
-                    attachment.appendChild(img)
+                    DOM.attachment.appendChild(img)
                 }
                 reader.readAsDataURL(file)
             }
@@ -247,27 +262,27 @@ const attachImg = () => {
 }
 
 const displayDots = () => {
-    plane.style.display = "none"
-    input.removeAttribute('contenteditable')
-    dots.forEach(dot => dot.style.display = "inline-block")
-    input.blur()
+    DOM.plane.style.display = "none"
+    DOM.input.removeAttribute('contenteditable')
+    DOM.dots.forEach(dot => dot.style.display = "inline-block")
+    DOM.input.blur()
 }
 
 const displayPlane = () => {
-    dots.forEach(dot => dot.style.display = "none")
-    plane.style.display = "inline-block"
-    input.setAttribute('contenteditable', 'true')
+    DOM.dots.forEach(dot => dot.style.display = "none")
+    DOM.plane.style.display = "inline-block"
+    DOM.input.setAttribute('contenteditable', 'true')
     if (!/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent)) {
-        input.focus()
+        DOM.input.focus()
     }
 }
 
 const refreshStats = (computerStats) => {
-    pcModel.textContent = `${computerStats.cpuModel}`
-    threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
-    memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
-    cpuPercentage.textContent = `${computerStats.cpuUsage}%`
-    ramPercentage.textContent = `${computerStats.memoryUsage}%`
+    DOM.pcModel.textContent = `${computerStats.cpuModel}`
+    DOM.threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
+    DOM.memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
+    DOM.cpuPercentage.textContent = `${computerStats.cpuUsage}%`
+    DOM.ramPercentage.textContent = `${computerStats.memoryUsage}%`
 }
 
 const getConvo = () => {
@@ -299,13 +314,13 @@ const getImages = () => {
 // LAYOUT
 
 const createChatbox = (msg = '', isAlpaca = true) => {
-    if (isAlpaca) input.disabled = true
+    if (isAlpaca) DOM.input.disabled = true
     let img = document.createElement("div")
     let div = document.createElement("div")
     let pSection = document.createElement("section")
     img.classList.add("mini-logo")
-    upperChat.append(img)
-    upperChat.append(div)
+    DOM.upperChat.append(img)
+    DOM.upperChat.append(div)
     div.classList.add("chat-box")
     pSection.classList.add("flex-column")
 
@@ -326,15 +341,15 @@ const createChatbox = (msg = '', isAlpaca = true) => {
     pSection.append(p)
 
     //attach img to chatbox
-    if (attachment.children.length > 0) {
-        Array.from(attachment.children).forEach(img => {
+    if (DOM.attachment.children.length > 0) {
+        Array.from(DOM.attachment.children).forEach(img => {
             pSection.appendChild(img)
         })
     }
 
     //Sets a different padding for the chat boxes based on the window.screen.width
     let chatBoxes = document.querySelectorAll('.chat-box')
-    if (mainspace.offsetWidth <= viewportWidth / 2) {
+    if (DOM.mainspace.offsetWidth <= viewportWidth / 2) {
         resizeChatboxPadding(chatBoxes, "2em 3em 2em 3em")
     } else {
         resizeChatboxPadding(chatBoxes, "2em 10em 2em 10em")
@@ -351,7 +366,7 @@ const createTimeSpentSpan = (tokens, time) => {
     let alpacas = [...document.querySelectorAll('.alpaca-convo')]
     const span = document.createElement("span")
     span.classList.add('time-spent')
-    span.textContent = `${modelInput.value} - token/s: ${tokens} - Time spent: ${time}s`
+    span.textContent = `${DOM.modelInput.value} - token/s: ${tokens} - Time spent: ${time}s`
     alpacas.at(-1).appendChild(span)
 }
 
@@ -359,7 +374,7 @@ const createResponseCancelledSpan = () => {
     let alpacas = [...document.querySelectorAll('.alpaca-convo')]
     const span = document.createElement("span")
     span.classList.add('response-cancelled')
-    span.textContent = `${modelInput.value} - Response cancelled`
+    span.textContent = `${DOM.modelInput.value} - Response cancelled`
     alpacas.at(-1).appendChild(span)
 }
 
@@ -369,7 +384,7 @@ const createStopResponseIcon = () => {
     i.classList.add("fa-regular","fa-circle-stop")
     span.classList.add("options")
     span.appendChild(i)
-    optMenu.appendChild(span)
+    DOM.optMenu.appendChild(span)
     i.addEventListener("click", getAbortResponse)
 }
 
@@ -385,9 +400,9 @@ const hasChatOverflow = () => {
         totalChatHeight += chat.offsetHeight
     })
 
-    if (totalChatHeight > upperChat.offsetHeight) {
-        upperChat.scrollTo({
-            top: upperChat.scrollHeight,
+    if (totalChatHeight > DOM.upperChat.offsetHeight) {
+        DOM.upperChat.scrollTo({
+            top: DOM.upperChat.scrollHeight,
             behavior: 'instant'
         })
     }
@@ -395,7 +410,7 @@ const hasChatOverflow = () => {
 
 const cleanChat = async () => {
     let chatBoxes = document.querySelectorAll('.chat-box')
-    chatBoxes.forEach(chat => upperChat.removeChild(chat))
+    chatBoxes.forEach(chat => DOM.upperChat.removeChild(chat))
     await cleanLLMContext()
     showNotification(notifications.clean)
 }
@@ -425,30 +440,30 @@ const onSnippetClipboardClick = async (codeSnippet) => {
 }
 
 const showNotification = (msg) => {
-    notification.style.display = "flex"
-    notification.innerHTML = `<i class="fa-solid fa-bell"></i> ${msg}`
-    notification.style.animation = 'fadeAndMove 0.5s forwards ease-in'
+    DOM.notification.style.display = "flex"
+    DOM.notification.innerHTML = `<i class="fa-solid fa-bell"></i> ${msg}`
+    DOM.notification.style.animation = 'fadeAndMove 0.5s forwards ease-in'
     setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.5s forwards ease-in'
+        DOM.notification.style.animation = 'fadeOut 0.5s forwards ease-in'
     }, 3000)
-    setTimeout(() => notification.style.display = "none", 6000)
+    setTimeout(() => DOM.notification.style.display = "none", 6000)
 }
 
-const hideSidebar = () => sideMenu.style.display = "none"
-const showSidebar = () => sideMenu.style.display = "flex"
+const hideSidebar = () => DOM.sideMenu.style.display = "none"
+const showSidebar = () => DOM.sideMenu.style.display = "flex"
 
-const hideChat = () => chat.style.display = "none"
-const showChat = () => chat.style.display = "flex"
+const hideChat = () => DOM.chat.style.display = "none"
+const showChat = () => DOM.chat.style.display = "flex"
 
-const showX = () => burgerMenu.innerHTML = `<i class="fa-solid fa-x"></i>`
-const showBurger = () => burgerMenu.innerHTML = `<i class="fa-solid fa-bars"></i>`
+const showX = () => DOM.burgerMenu.innerHTML = `<i class="fa-solid fa-x"></i>`
+const showBurger = () => DOM.burgerMenu.innerHTML = `<i class="fa-solid fa-bars"></i>`
 
 const resizeChatboxPadding = (chatBoxes, padding) => {
     if (chatBoxes.length > 0) chatBoxes.forEach(chatbox => chatbox.style.padding = padding)
 }
 
 const handleSidebar = () => {
-    if (burgerMenu.firstChild.className.includes("fa-x")) {
+    if (DOM.burgerMenu.firstChild.className.includes("fa-x")) {
         hideSidebar()
         showBurger()
         if (screen.orientation.type === "portrait-primary") {
@@ -482,34 +497,33 @@ const resizeLayout = () => {
 const onModelInputChange = () => {
     if(/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent) && window.matchMedia("(orientation: portrait)").matches
         || (window.innerWidth < 468)) {
-        placeholder.textContent = `Write to ...`
+        DOM.placeholder.textContent = `Write to ...`
     }else {
-        placeholder.textContent = `Write to ${modelInput.value}`
+        DOM.placeholder.textContent = `Write to ${DOM.modelInput.value}`
     }
 }
 
 const hidePlaceholder = () => {  
-    placeholder.remove()
-    input.textContent = input.textContent.trimEnd()
+    DOM.placeholder.remove()
+    DOM.input.textContent = DOM.input.textContent.trimEnd()
 }
 
 const showPlaceholder = () => {
-    if(input.textContent.length === 0) 
-        input.append(placeholder)
+    if(DOM.input.textContent.length === 0) 
+        DOM.input.append(DOM.placeholder)
 }
 
 const onUpperChatScroll = () => {
-    const upperChat = document.querySelector('.upper-chat')
-    const chatBoxes = upperChat.querySelectorAll('.chat-box')
+    const chatBoxes = DOM.upperChat.querySelectorAll('.chat-box')
     let totalChatHeight = Array.from(chatBoxes).reduce((total, chat) => total + chat.offsetHeight, 0)
 
-    const scrollPosition = upperChat.scrollTop + upperChat.clientHeight
+    const scrollPosition = DOM.upperChat.scrollTop + DOM.upperChat.clientHeight
     const isAtBottom = Math.abs(scrollPosition - totalChatHeight) <= 1
 
     if (isAtBottom) {
-        upperChat.classList.remove("masked");
+        DOM.upperChat.classList.remove("masked");
     } else {
-        upperChat.classList.add("masked");
+        DOM.upperChat.classList.add("masked");
     }
 }
 
@@ -615,56 +629,25 @@ const init = async () => {
 
 window.addEventListener('DOMContentLoaded', init)
 window.addEventListener('resize', resizeLayout)
-burgerMenu.addEventListener('click', handleSidebar)
 document.body.addEventListener('keypress', sendByEnter)
-chat.addEventListener('dragover', (e) => onImgDragover(e))
-chat.addEventListener('dragleave', (e) => onImgDragLeave(e))
-chat.addEventListener('drop', (e) => onImgDrop(e))
-upperChat.addEventListener('scroll', onUpperChatScroll)
-modelInput.addEventListener('change', onModelInputChange)
-plane.addEventListener('click', send)
-optPaperclip.addEventListener('click', attachImg)
-optClean.addEventListener('click', cleanChat)
-optExport.addEventListener('click', getAlpacaJson)
-input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
-input.addEventListener('focus', hidePlaceholder)
-input.addEventListener('blur', showPlaceholder)
+DOM.burgerMenu.addEventListener('click', handleSidebar)
+DOM.chat.addEventListener('dragover', (e) => onImgDragover(e))
+DOM.chat.addEventListener('dragleave', (e) => onImgDragLeave(e))
+DOM.chat.addEventListener('drop', (e) => onImgDrop(e))
+DOM.upperChat.addEventListener('scroll', onUpperChatScroll)
+DOM.modelInput.addEventListener('change', onModelInputChange)
+DOM.plane.addEventListener('click', send)
+DOM.optPaperclip.addEventListener('click', attachImg)
+DOM.optClean.addEventListener('click', cleanChat)
+DOM.optExport.addEventListener('click', getAlpacaJson)
+DOM.input.addEventListener('paste', (e) => manageInputChatPasteEvent(e))
+DOM.input.addEventListener('focus', hidePlaceholder)
+DOM.input.addEventListener('blur', showPlaceholder)
 
 // WSS
 
-const setWebsocketEvents = () => {
-    socket.addEventListener('open', async () => {
-        await getStats()
-        console.log('WebSocket connection established')
-    })
-    
-    socket.addEventListener('message', (event) => {
-        let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
-        if (event.data.includes(`error:`)) {
-            showNotification(event.data.replace('error: ', ''))
-            displayPlane()
-        }
-        if (event.data.includes(`{"stats":`)) {
-            let { stats } = JSON.parse(event.data)
-            refreshStats(stats)
-            return
-        }
-        if (!event.data.startsWith("{done: true}")) {
-            formatLLMResponse(event.data, alpacaConvo)
-        } else {
-            let time = event.data.split((','))[1]
-            let tokens = event.data.split((','))[2]
-            formatAfterResponse(alpacaConvo)
-            removeStopResponseIcon()
-            createTimeSpentSpan(tokens, time)
-            displayPlane()
-            // textToTTS(alpacaConvo.innerText)
-        }
-    
-        hasChatOverflow()
-    })
-}
 
-setWebsocketEvents()
+
+
 
 
