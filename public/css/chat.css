@@ -312,6 +312,7 @@ li {
 #placeholder {
     cursor: text;
     color: gray;
+    user-select: none;
 }
 
  /* typing animation */

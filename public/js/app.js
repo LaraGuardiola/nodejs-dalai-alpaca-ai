@@ -480,19 +480,22 @@ const resizeLayout = () => {
 }
 
 const onModelInputChange = () => {
-    if(/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent) && window.matchMedia("(orientation: portrait)").matches) {
-        placeholder.textContent = `Write`
+    if(/(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry)/i.test(navigator.userAgent) && window.matchMedia("(orientation: portrait)").matches
+        || (window.innerWidth < 468)) {
+        placeholder.textContent = `Write to ...`
     }else {
         placeholder.textContent = `Write to ${modelInput.value}`
     }
 }
 
-const hidePlaceholder = () => {
-    placeholder.style.display = "none"
+const hidePlaceholder = () => {  
+    placeholder.remove()
+    input.textContent = input.textContent.trimEnd()
 }
 
 const showPlaceholder = () => {
-    placeholder.style.display = "block"
+    if(input.textContent.length === 0) 
+        input.append(placeholder)
 }
 
 // FORMATS
