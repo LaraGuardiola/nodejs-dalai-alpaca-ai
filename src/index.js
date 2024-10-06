@@ -2,7 +2,7 @@ import express from "express"
 import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
-import { wssCallLLM, cleanLLMContext, abortResponse } from './localLLM.js'
+import { wssCallLLM, cleanLLMContext, abortResponse } from './ollama.js'
 import { exportToJson, getStats, getModels, TTS, getIp, createZrokPublicDomain } from './utils.js'
 import cors from 'cors'
 
@@ -20,7 +20,7 @@ app.use(cors({
 app.use((req, res, next) => getIp(req, res, next))
 app.use(morgan('common'))
 app.use(express.static('public'))
-app.use(express.json())
+app.use(express.json({ limit: '25mb' }))
 app.use((err, req, res, next) => {
     console.error('Server error:', err)
     res.status(500).json({ success: false, message: "Server error:", error: err.message })
@@ -36,7 +36,7 @@ server.listen(PORT, () => {
 })
 
 app.post('/api/llm', async (_, res) => {
-    return res.json({ alpaca: 'shit is working' })
+    return res.json({ alpaca: 'Prompt has been received' })
 })
 
 app.get('/api/llm/abort', async (_, res) => {
