@@ -110,7 +110,7 @@ export const onUpperChatScroll = () => {
     const scrollPosition = DOM.upperChat.scrollTop + DOM.upperChat.clientHeight
     const isAtBottom = Math.abs(scrollPosition - totalChatHeight) <= 1
 
-    if (isAtBottom) {
+    if (isAtBottom && DOM.upperChat.clientHeight < totalChatHeight) {
         DOM.upperChat.classList.remove("masked");
     } else {
         DOM.upperChat.classList.add("masked");
