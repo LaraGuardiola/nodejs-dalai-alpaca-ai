@@ -2,7 +2,7 @@ import express from "express"
 import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
-import { wssCallLLM, cleanLLMContext, abortResponse } from './ollama.js'
+import { wssCallLLM, cleanLLMContext, abortResponse, restCallLLM } from './ollama.js'
 import { exportToJson, getStats, getModels, TTS, getIp, createZrokPublicDomain } from './utils.js'
 import cors from 'cors'
 
@@ -35,8 +35,9 @@ server.listen(PORT, () => {
   console.log(`Server started at http://localhost:${PORT}`)
 })
 
-app.post('/api/llm', async (_, res) => {
-    return res.json({ alpaca: 'Prompt has been received' })
+app.post('/api/llm', async (req, res) => {
+    const response = await restCallLLM(req.body)
+    return res.json({ alpaca: response })
 })
 
 app.get('/api/llm/abort', async (_, res) => {
@@ -72,7 +73,7 @@ app.post('/api/tts', async (req, res) => {
     }
 })
 
-// In order to handle the error ollama throws when aborting
+//In order to handle the error ollama throws when aborting
 process.on('unhandledRejection', () => {
     console.error('Response from the LLM has been aborted.')
 })

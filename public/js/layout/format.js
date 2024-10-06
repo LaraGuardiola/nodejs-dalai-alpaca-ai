@@ -22,8 +22,14 @@ export const formatLLMResponse = (msg, alpacaConvo) => {
     msg = formatHTMLSnippetSpecialCharacter(msg)
     //checks if the innerHTML of the response includes ``` in order to envelop it with <pre><code>
     formatCodeSnippets(alpacaConvo)
-    formatBoldText(alpacaConvo)
+    formatBoldText(alpacaConvo) 
     alpacaConvo.innerHTML += msg
+}
+
+export const formatLLMRestResponse = (msg, alpacaConvo) => {
+    msg = formatHTMLSnippetSpecialCharacter(msg)
+    formatCodeSnippets(alpacaConvo)
+    formatBoldText(alpacaConvo) 
 }
 
 export const formatHTMLSnippetSpecialCharacter = (msg) => {
@@ -54,7 +60,6 @@ export const formatBlackquotes = (alpacaConvo) => {
     let replacedStr = alpacaConvo.innerHTML.replace(/`(.*?)`/gs, '<span class="blackquote">$1</span>')
     alpacaConvo.innerHTML = replacedStr
 }
-
 
 export const createSnippetHeaders = (codeHeaders, snippet, index) => {
     let lang

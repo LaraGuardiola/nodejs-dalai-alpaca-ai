@@ -1,6 +1,6 @@
 import * as WSS from "../websockets/websockets.js"
 import * as UTILS from "../utils/utils.js"
-import { LAYOUT, DOM } from "../layout/index.js"
+import { LAYOUT, DOM, FORMAT } from "../layout/index.js"
 
 // REQUESTS
 export const getStats = async () => {
@@ -65,19 +65,31 @@ export const getAlpacaJson = async () => {
 }
 
 export const callLLM = async (messageContext) => {
-    WSS.socket.send(messageContext)
     LAYOUT.displayDots()
-    try {
-        await fetch(`${WSS.PANDORA_URL}/api/llm`, {
-            method: "POST",
-            body: messageContext,
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
+    LAYOUT.createStopResponseIcon()
+    if(DOM.commInput.checked) {
+        WSS.socket.send(messageContext)
         LAYOUT.createChatbox()
-    } catch (error) {
-        console.error(error)
+    }else {
+        try {
+            const response = await fetch(`${WSS.PANDORA_URL}/api/llm`, {
+                method: "POST",
+                body: messageContext,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            const { alpaca } = await response.json()
+            
+            LAYOUT.createChatbox(alpaca)
+            LAYOUT.displayPlane()
+            LAYOUT.removeStopResponseIcon()    
+            let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
+            FORMAT.formatLLMRestResponse(alpaca, alpacaConvo)
+            FORMAT.formatAfterResponse(alpacaConvo)
+        } catch (error) {
+            console.error(error)
+        }
     }
 }
 

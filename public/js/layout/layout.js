@@ -59,7 +59,6 @@ export const createChatbox = (msg = '', isAlpaca = true) => {
     if (isAlpaca) {
         div.style.backgroundColor = "#444654"
         div.classList.add('alpaca-convo')
-        createStopResponseIcon()
     }
     if (!isAlpaca) {
         img.style.backgroundImage = "url(\"./assets/img/snoop.jpeg\")"
