@@ -13,6 +13,8 @@ export let ramPercentage = document.querySelector('#ram-percentage')
 export let placeholder = document.querySelector('#placeholder')
 export let dots = document.querySelectorAll('.dot')
 export let plane = document.querySelector('.send-icon')
+
+//menu options
 export let optMenu = document.querySelector('.options-menu')
 export let optPaperclip = document.querySelector('#option-attach')
 export let optExport = document.querySelector('#option-export')

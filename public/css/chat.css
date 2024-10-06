@@ -508,6 +508,10 @@ code {
     width: 100%;
 }
 
+.snippet-li {
+    line-height: 0;
+    list-style-type: disc;
+}
 
 /* notifications */
 .notification {

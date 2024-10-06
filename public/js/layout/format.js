@@ -3,6 +3,7 @@ import { DOM } from '../layout/index.js'
 import { hljs } from '../libraries/highlight.js';
 
 export const formatAfterResponse = (alpacaConvo) => {
+    formatListItems(alpacaConvo)
     formatBlackquotes(alpacaConvo)
     createHeaderTags(alpacaConvo)
 
@@ -29,7 +30,7 @@ export const formatLLMResponse = (msg, alpacaConvo) => {
 export const formatLLMRestResponse = (msg, alpacaConvo) => {
     msg = formatHTMLSnippetSpecialCharacter(msg)
     formatCodeSnippets(alpacaConvo)
-    formatBoldText(alpacaConvo) 
+    formatBoldText(alpacaConvo)
 }
 
 export const formatHTMLSnippetSpecialCharacter = (msg) => {
@@ -75,7 +76,7 @@ export const formatBlackquotes = (alpacaConvo) => {
     const replacedStr = htmlContent.replace(/`([^`]+)`/g, replaceOutsideTags)
     
     alpacaConvo.innerHTML = replacedStr
-};
+}
 
 export const createSnippetHeaders = (codeHeaders, snippet, index) => {
     let lang
@@ -102,6 +103,17 @@ export const createHeaderTags = (alpacaConvo) => {
         }
     })
     alpacaConvo.innerHTML = lines.join('\n')
+}
+
+export const formatListItems = (alpacaConvo) => {   
+    let lines = [...alpacaConvo.innerHTML.split('\n')]
+    
+    let formattedLines= lines.map(line => {
+        if(line.startsWith('*')) {
+            return `<li class="snippet-li">${line.replace('* ','')}</li>`
+        }
+    })
+    alpacaConvo.innerHTML = formattedLines.join('\n')
 }
 
 //this lovely snippet comes straight from code from deepseek-coder:33b, does the infernal job of formatting the main input when pasting
