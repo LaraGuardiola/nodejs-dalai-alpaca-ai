@@ -57,25 +57,26 @@ export const formatBoldText = (alpacaConvo) => {
 
 // this one comes from Claude, what a fucking smartass.
 export const formatBlackquotes = (alpacaConvo) => {
-    const htmlContent = alpacaConvo.innerHTML;
+    const htmlContent = alpacaConvo.innerHTML
     
     const replaceOutsideTags = (match, p1, offset, string) => {
-        const previousContent = string.slice(0, offset);
-        const openCode = (previousContent.match(/<code/g) || []).length;
-        const closeCode = (previousContent.match(/<\/code>/g) || []).length;
-        const openPre = (previousContent.match(/<pre/g) || []).length;
-        const closePre = (previousContent.match(/<\/pre>/g) || []).length;
+        const previousContent = string.slice(0, offset)
+        const openCode = (previousContent.match(/<code/g) || []).length
+        const closeCode = (previousContent.match(/<\/code>/g) || []).length
+        const openPre = (previousContent.match(/<pre/g) || []).length
+        const closePre = (previousContent.match(/<\/pre>/g) || []).length
 
         if (openCode > closeCode || openPre > closePre) {
-            return match;
+            return match
         }
         
-        return `<span class="blackquote">${p1}</span>`;
-    };
-    const replacedStr = htmlContent.replace(/`([^`]+)`/g, replaceOutsideTags);
+        return `<span class="blackquote">${p1}</span>`
+    }
+    const replacedStr = htmlContent.replace(/`([^`]+)`/g, replaceOutsideTags)
     
-    alpacaConvo.innerHTML = replacedStr;
+    alpacaConvo.innerHTML = replacedStr
 };
+
 export const createSnippetHeaders = (codeHeaders, snippet, index) => {
     let lang
     let lines = snippet?.innerHTML.split('\n')
