@@ -107,11 +107,10 @@ export const createHeaderTags = (alpacaConvo) => {
 
 export const formatListItems = (alpacaConvo) => {   
     let lines = [...alpacaConvo.innerHTML.split('\n')]
-    
     let formattedLines= lines.map(line => {
         if(line.startsWith('*')) {
             return `<li class="snippet-li">${line.replace('* ','')}</li>`
-        }
+        }else return line
     })
     alpacaConvo.innerHTML = formattedLines.join('\n')
 }

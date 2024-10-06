@@ -51,7 +51,6 @@ export const abortResponse = async () => {
 }
 
 const processRestResponse = async (response) => {
-    console.log(response)
     LLMContext.push({ role: 'assistant', content: response.toString()} )
     return response.toString()
 }
