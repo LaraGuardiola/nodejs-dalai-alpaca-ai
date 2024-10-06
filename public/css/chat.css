@@ -509,7 +509,6 @@ code {
 }
 
 .snippet-li {
-    line-height: 0;
     list-style-type: disc;
 }
 
