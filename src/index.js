@@ -36,8 +36,8 @@ server.listen(PORT, () => {
 })
 
 app.post('/api/llm', async (req, res) => {
-    const response = await restCallLLM(req.body)
-    return res.json({ alpaca: response })
+    const { alpaca, totalDuration, tokensPerSecond } = await restCallLLM(req.body)
+    return res.json({ alpaca: alpaca, totalDuration: totalDuration, tokensPerSecond: tokensPerSecond })
 })
 
 app.get('/api/llm/abort', async (_, res) => {

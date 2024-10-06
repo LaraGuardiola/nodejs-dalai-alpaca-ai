@@ -79,11 +79,12 @@ export const callLLM = async (messageContext) => {
                     "Content-Type": "application/json"
                 }
             })
-            const { alpaca } = await response.json()
+            const { alpaca, totalDuration, tokensPerSecond } = await response.json()
             
             LAYOUT.createChatbox(alpaca)
             LAYOUT.displayPlane()
-            LAYOUT.removeStopResponseIcon()    
+            LAYOUT.removeStopResponseIcon()
+            LAYOUT.createTimeSpentSpan(tokensPerSecond, totalDuration)    
             let alpacaConvo = [...document.querySelectorAll('.alpaca-convo > .flex-column p')].at(-1)
             FORMAT.formatLLMRestResponse(alpaca, alpacaConvo)
             FORMAT.formatAfterResponse(alpacaConvo)

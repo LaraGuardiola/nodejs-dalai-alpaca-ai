@@ -12,7 +12,8 @@ export const restCallLLM = async (msg) => {
             model: modelOption,
             messages: LLMContext
         })
-        return processRestResponse(response.message.content)
+        console.log(response)
+        return processRestResponse(response)
     } catch (error) {
         console.error(error)
         return { message: error.message }
@@ -51,8 +52,10 @@ export const abortResponse = async () => {
 }
 
 const processRestResponse = async (response) => {
-    LLMContext.push({ role: 'assistant', content: response.toString()} )
-    return response.toString()
+    LLMContext.push({ role: 'assistant', content: response.message.content.toString() })
+    let totalDuration = (response.total_duration / 1e9).toFixed(2)
+    let tokensPerSecond = (response.eval_count / response.eval_duration * 1e9).toFixed(2)
+    return { alpaca: response.message.content.toString(), totalDuration: totalDuration, tokensPerSecond: tokensPerSecond }
 }
 
 const processResponse = async (ws, response) => {
