@@ -32,12 +32,12 @@ const onSnippetClipboardClick = async (codeSnippet) => {
             textarea.select()
             document.execCommand('copy')
             document.body.removeChild(textarea)
-            showNotification(notifications.clipboard)
+            LAYOUT.showNotification(UTILS.notifications.clipboard)
         } else {
-            showNotification(notifications.clipboard)
+            LAYOUT.showNotification(UTILS.notifications.clipboard)
         }
     } catch (error) {
-        showNotification(error)
+        LAYOUT.showNotification(error)
     }
 }
 
@@ -135,4 +135,14 @@ export const onSendMsgFromKeyboard = async (event) => {
     }else if(event.key === 'Enter') {
         send(event)
     }
+}
+
+export const onCommSwitchClick = () => {
+    if (DOM.commInput.checked) {
+        DOM.rest.style.display = 'none'
+        DOM.wss.style.display = 'block'
+    }else {
+        DOM.rest.style.display = 'block'
+        DOM.wss.style.display = 'none'
+    }      
 }

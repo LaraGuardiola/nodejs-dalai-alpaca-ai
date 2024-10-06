@@ -5,18 +5,26 @@ let LLMContext = [
 ]
 
 // REST API 
-export const restCallLLM = async (record) => {
-    const response = await ollama.chat({
-        model: 'mixtral-8x7b', //pending to use the model from the argument
-        messages: record
-    })
-    return response.message.content
+export const restCallLLM = async (msg) => {
+    const modelOption = prepareContext(msg)
+    try {
+        const response = await ollama.chat({
+            model: modelOption,
+            messages: LLMContext,
+            stream: false
+        })
+        return response.message.content
+    } catch (error) {
+        console.error(error)
+        return { message: error.message }
+    }
+    
+    
 }
 
 //WSS - Takes socket and the message
 export const wssCallLLM = async (ws, msg) => {
-    let [message, modelOption, images] = JSON.parse(msg)
-    LLMContext.push({ role: 'user', content: message.toString(), images: images })
+    const modelOption = prepareContext(msg)
     try {
         const response = await ollama.chat({ model: modelOption, messages: LLMContext, stream: true })      
         return processResponse(ws, response)
@@ -24,6 +32,12 @@ export const wssCallLLM = async (ws, msg) => {
         console.error(error)
         setTimeout(() => ws.send(`error: ${error}`), 200)
     }
+}
+
+const prepareContext = (msg) => {
+    let [message, modelOption, images] = JSON.parse(msg)
+    LLMContext.push({ role: 'user', content: message.toString(), images: images })
+    return modelOption
 }
 
 export const abortResponse = async () => {

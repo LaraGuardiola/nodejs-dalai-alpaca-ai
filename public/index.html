@@ -31,8 +31,8 @@
                 <h3 class="tag-header">Settings</h3>
                 <div class="settings-row">
                     <label for="model">Model:</label>
-                    <select tabindex="1" class="side-menu-input montserrat" id="model" name="model">
-                    </select>
+                    <!-- <select tabindex="1" class="side-menu-input montserrat" id="model" name="model">
+                    </select> -->
                 </div>
                 <br>
                 <h3 class="tag-header">System info</h3>
@@ -54,8 +54,18 @@
                     </div>
                 </div>
         </div>
-        <div class="burger-menu"><i class="fa-solid fa-bars"></i></div>
+        <!-- <div class="burger-menu"><i class="fa-solid fa-bars"></i></div> -->
         <div class="chat">
+            <div class="header-chat">
+                <div class="burger-menu"><i class="fa-solid fa-bars"></i></div>
+                <select tabindex="1" class="side-menu-input montserrat" id="model" name="model"></select>
+                <label class="switch">
+                    <input type="checkbox" id="comm-input" checked>
+                    <div class="slider round"></div>
+                </label>
+                <label class="switch-label" id="rest">REST</label>
+                <label class="switch-label" id="wss">WSS</label>
+            </div>
             <div class="upper-chat">
                 <!-- <pre><code>function() { console.log('test')) }</code></pre> -->
             </div>

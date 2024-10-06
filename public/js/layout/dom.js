@@ -19,3 +19,9 @@ export let optExport = document.querySelector('#option-export')
 export let optClean = document.querySelector('#option-clean')
 export let notification = document.querySelector('.notification')
 export let attachment = document.querySelector('.attachment')
+
+//header communication switch
+export let commSwitch = document.querySelector('.switch')
+export let commInput = document.querySelector('#comm-input')
+export let rest = document.querySelector('#rest')
+export let wss = document.querySelector('#wss')

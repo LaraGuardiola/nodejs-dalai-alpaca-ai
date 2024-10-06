@@ -1,4 +1,5 @@
 import * as EVENTS from '../events/events.js'
+import { DOM } from '../layout/index.js'
 import { hljs } from '../libraries/highlight.js';
 
 export const formatAfterResponse = (alpacaConvo) => {

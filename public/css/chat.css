@@ -33,6 +33,11 @@ textarea {
     padding-left: 10px;
 }
 
+#model {
+    border-color:#05D962;
+    max-width: 250px;
+}
+
 span {
     color: #05D962;
 }
@@ -271,6 +276,93 @@ li {
 
 .green-border > .tag-header {
     border: none;
+}
+
+.header-chat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:#202123;
+    padding: 0.8em;
+}
+
+/* SWITCH FOR REST AND WSS - Format the label that will serve as container  */
+.switch {
+    position: absolute;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    right: 1em;
+    -webkit-tap-highlight-color: transparent; */
+}
+
+    /* Hide the html checkbox */
+.switch input {
+    display:none;
+}
+
+    /* Format the switch box on which the control knob or slider will slide */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color:#444654;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+    /* Depict the control knob or slider using the pseudo-selector before */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+    /* We change the background color when the checkbox is activated */
+input:checked + .slider {
+    background-color:#05D962;
+}
+
+    /* We slide the slider to the right when the checkbox is activated */ 
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+    background-color:#444654;
+}
+
+/* We apply a rounded edge effect to the slider and to the bottom of the slide */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.switch-label {
+    position: absolute;
+    font-size: 7px;
+    top: 0.7em;
+    color:#05D962;
+}
+
+#wss {
+    right: 0.5em;
+}
+
+#rest {
+    right: 10em;
+    display: none;
 }
 
 #input-chat {
