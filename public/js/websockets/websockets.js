@@ -25,11 +25,6 @@ export const setWebsocketEvents = () => {
             LAYOUT.showNotification(event.data.replace('error: ', ''))
             LAYOUT.displayPlane()
         }
-        if (event.data.includes(`{"stats":`)) {
-            let { stats } = JSON.parse(event.data)
-            LAYOUT.refreshStats(stats)
-            return
-        }
         if (!event.data.startsWith("{done: true}")) {
             FORMAT.formatLLMResponse(event.data, alpacaConvo)
         } else {

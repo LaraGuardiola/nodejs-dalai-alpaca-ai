@@ -108,12 +108,12 @@ export const onUpperChatScroll = () => {
     let totalChatHeight = Array.from(chatBoxes).reduce((total, chat) => total + chat.offsetHeight, 0)
 
     const scrollPosition = DOM.upperChat.scrollTop + DOM.upperChat.clientHeight
-    const isAtBottom = Math.abs(scrollPosition - totalChatHeight) <= 1
+    const isAtBottom = Math.abs(scrollPosition - totalChatHeight) <= 5
 
     if (isAtBottom && DOM.upperChat.clientHeight < totalChatHeight) {
-        DOM.upperChat.classList.remove("masked");
+        DOM.upperChat.classList.remove("masked")
     } else {
-        DOM.upperChat.classList.add("masked");
+        DOM.upperChat.classList.add("masked")
     }
 }
 
@@ -145,4 +145,20 @@ export const onCommSwitchClick = () => {
         DOM.rest.style.display = 'block'
         DOM.wss.style.display = 'none'
     }      
+}
+
+export const moveCursorToEnd = () => {
+    setTimeout(() => {
+        // Crear un rango y movimiento de cursor
+        const selection = window.getSelection()
+        const range = document.createRange()
+
+        // Seleccionar todo el texto actual
+        range.selectNodeContents(DOM.input)
+        range.collapse(false)  // Collapsar al final del contenido
+
+        // Establecer la selección en el final
+        selection.removeAllRanges() 
+        selection.addRange(range)
+    }, 0)
 }

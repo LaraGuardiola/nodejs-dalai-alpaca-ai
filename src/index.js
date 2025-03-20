@@ -3,7 +3,7 @@ import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
 import { wssCallLLM, cleanLLMContext, abortResponse, restCallLLM } from './ollama.js'
-import { exportToJson, getStats, getModels, TTS, getIp, createZrokPublicDomain } from './utils.js'
+import { exportToJson, getModels, createZrokPublicDomain } from './utils.js'
 import cors from 'cors'
 
 let env = process.argv[2]
@@ -17,7 +17,6 @@ const app = express()
 app.use(cors({
     origin: domain
 }))
-app.use((req, res, next) => getIp(req, res, next))
 app.use(morgan('common'))
 app.use(express.static('public'))
 app.use(express.json({ limit: '25mb' }))
@@ -63,16 +62,6 @@ app.post('/api/json', async (req, res) => {
     }
 })
 
-app.post('/api/tts', async (req, res) => {
-    const { msg } = req.body
-    try{
-        await TTS(msg)
-        res.json({ alpaca: 'Successfully converted text to speech' })
-    }catch (error) {
-        res.status(500).json({ alpaca: 'Something went wrong. Check if you have Bark AI installed' })
-    }
-})
-
 //In order to handle the error ollama throws when aborting
 process.on('unhandledRejection', () => {
     console.error('Response from the LLM has been aborted.')
@@ -84,10 +73,6 @@ wss.on('connection', async(ws) => {
     
     ws.on('message', async (msg) => {
         let MSG = msg.toString()
-        if(MSG === "STATS") {
-            getStats(ws)
-        }else {
-            wssCallLLM(ws, MSG)
-        }
+        wssCallLLM(ws, MSG)
     })
 })

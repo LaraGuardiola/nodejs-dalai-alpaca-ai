@@ -37,14 +37,6 @@ export const displayPlane = () => {
     }
 }
 
-export const refreshStats = (computerStats) => {
-    DOM.pcModel.textContent = `${computerStats.cpuModel}`
-    DOM.threadsCores.textContent = `${computerStats.cpuThreads}T / ${computerStats.cpuCores}C`
-    DOM.memory.textContent = `${computerStats.usedMemory} / ${Math.round(computerStats.totalMemory)}GB`
-    DOM.cpuPercentage.textContent = `${computerStats.cpuUsage}%`
-    DOM.ramPercentage.textContent = `${computerStats.memoryUsage}%`
-}
-
 export const createChatbox = (msg = '', isAlpaca = true) => {
     if (isAlpaca) DOM.input.disabled = true
     let img = document.createElement("div")
