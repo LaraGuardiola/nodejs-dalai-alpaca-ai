@@ -4,6 +4,7 @@ import * as UTILS from '../utils/utils.js'
 
 // LAYOUT
 const viewportWidth = window.screen.width
+export let scrollPauseTime = 0
 export const cleanInputChat = () => DOM.input.innerHTML = ''
 
 //this lovely snippet comes straight from code from deepseek-coder:33b, does the infernal job of formatting the main input when pasting
@@ -124,10 +125,14 @@ export const hasChatOverflow = () => {
     })
 
     if (totalChatHeight > DOM.upperChat.offsetHeight) {
-        DOM.upperChat.scrollTo({
-            top: DOM.upperChat.scrollHeight,
-            behavior: 'instant'
-        })
+        if (new Date().getTime() - scrollPauseTime > 5000) { // Check if it's been more than 5 seconds since the last scroll pause
+            DOM.upperChat.scrollTo({
+                top: DOM.upperChat.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    } else {
+        scrollPauseTime = new Date().getTime();
     }
 }
 
@@ -235,3 +240,7 @@ export const showPlaceholder = () => {
     if(DOM.input.textContent.length === 0) 
         DOM.input.append(DOM.placeholder)
 }
+
+document.addEventListener('wheel', () => scrollPauseTime = new Date().getTime())
+document.addEventListener('touchstart', () => scrollPauseTime = new Date().getTime())
+document.addEventListener('touchmove', () => scrollPauseTime = new Date().getTime())

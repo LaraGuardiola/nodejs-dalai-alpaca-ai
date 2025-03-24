@@ -6,3 +6,4 @@ alpaca-queries.json
 *.gguf
 *.wav
 modelfile
+.env

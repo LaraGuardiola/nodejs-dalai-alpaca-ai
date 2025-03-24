@@ -3,20 +3,19 @@ import http from 'http'
 import morgan from "morgan"
 import { WebSocketServer } from 'ws'
 import { wssCallLLM, cleanLLMContext, abortResponse, restCallLLM } from './ollama.js'
-import { exportToJson, getModels, createZrokPublicDomain } from './utils.js'
+import { exportToJson, getModels, createZrokPublicDomain, getIpv4 } from './utils.js'
 import cors from 'cors'
 
 let env = process.argv[2]
 let domain
 
+if(env === 'local') getIpv4()
 if(env === 'zrok') domain = createZrokPublicDomain()
 
 const app = express()
 
 // MIDDLEWARES
-app.use(cors({
-    origin: domain
-}))
+app.use(cors({ origin: domain }))
 app.use(morgan('common'))
 app.use(express.static('public'))
 app.use(express.json({ limit: '25mb' }))

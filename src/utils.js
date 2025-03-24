@@ -63,6 +63,25 @@ export const getModels = async () => {
     }
 }
 
+export const getIpv4 = async () => {
+    const IP_CONFIG_COMMAND = "ipconfig"
+
+    try {
+        const { stdout, stderr } = await execAsync(IP_CONFIG_COMMAND)
+
+        if (stderr) {
+            console.error(`Some error occurred while retrieving information: ${stderr}`)
+        }
+
+        let outputDataStructured = stdout.split('\n')
+        let ipv4 = outputDataStructured[23].split(":")[1].trim()
+        console.log(`IPv4 Address: ${ipv4}`)
+        fs.writeFile('./.env', `IPv4=${ipv4}`)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const createZrokPublicDomain = () => {
     const zrokPath = path.join(__dirname, 'zrok.exe')
     const zrokProcess = spawn(zrokPath, ['share', 'public', 'http://localhost:3000'], {
